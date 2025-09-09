@@ -1,6 +1,7 @@
 package test.creatingPerson;
 
 import application.entity.Person;
+import application.repository.MyArrayList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,6 @@ public class PersonTest {
         persons.add(person2);
         persons.add(person3);
         persons.add(person4);
-        persons.forEach(System.out::println);
     }
 
 }
