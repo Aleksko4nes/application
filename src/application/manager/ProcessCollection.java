@@ -9,6 +9,5 @@ public interface ProcessCollection<T> {
     // TODO: реализовать бинарный поиск
     T findElementInCollectionByBinarySearch(String name);
 
-
-
+    List<T> sortCollection(List<T> collection);
 }
