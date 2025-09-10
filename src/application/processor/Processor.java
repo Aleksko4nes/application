@@ -1,12 +1,9 @@
-package application.manager;
+package application.processor;
 
 import application.entity.Person;
-import application.manager.input_processor.Importer;
-import application.manager.input_processor.InputStrategy;
-import application.manager.searching.SearchStrategy;
-import application.manager.searching.Searcher;
-import application.manager.sorting.Sorter;
-import application.manager.sorting.SortingStrategy;
+import application.processor.input.InputStrategy;
+import application.processor.searching.SearchStrategy;
+import application.processor.sorting.SortingStrategy;
 
 import java.util.List;
 

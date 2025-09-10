@@ -1,4 +1,4 @@
-package application.manager.searching;
+package application.processor.searching;
 
 import java.util.List;
 
