@@ -1,6 +1,8 @@
 package application.entity;
 
-public class Person {
+import java.util.Objects;
+
+public class Person implements Comparable<Person> {
     private final String name;
     private final String lastName;
     private final int age;
@@ -30,6 +32,27 @@ public class Person {
                 "\"lastName\" : " + lastName  + '\n' +
                 "\"age\" : " + age + '\n' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Person o) {
+        int cmp = this.name.compareTo(o.name);
+        if (cmp != 0) return cmp;
+        cmp = Integer.compare(this.age, o.age);
+        if(cmp != 0) return cmp;
+        return this.lastName.compareTo(o.lastName);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return age == person.age && Objects.equals(name, person.name) && Objects.equals(lastName, person.lastName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, lastName, age);
     }
 
     public static class Builder {

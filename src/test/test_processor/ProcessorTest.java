@@ -1,7 +1,7 @@
 package test.test_processor;
 
 import application.entity.Person;
-import application.manager.Processor;
+import application.processor.Processor;
 
 public class ProcessorTest{
     public static void main(String[] args) {
