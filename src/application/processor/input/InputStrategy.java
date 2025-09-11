@@ -1,4 +1,4 @@
-package application.manager.input_processor;
+package application.processor.input;
 
 import java.util.List;
 
