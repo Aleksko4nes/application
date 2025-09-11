@@ -2,12 +2,44 @@ package application.processor.input;
 
 import application.entity.Person;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ManualInput<T extends Person> implements InputStrategy<T>{
     @Override
     public List<T> load(String value) {
-        return null;
+        List<T> people = new ArrayList<>();
+
+        if (value == null || value.trim().isEmpty()){
+            System.out.println("Пустая строка!");
+            return people;
+        }
+
+        String[] personalData = value.trim().split("\\s+");
+
+        if (personalData.length != 3) {
+            System.out.println("Ошибка ввода: Необходимо ввести \"Имя, Фамилию и Возраст\"");
+            return people;
+        }
+
+        try {
+            int age = Integer.parseInt(personalData[2]);
+
+            @SuppressWarnings("unchecked")
+            T person = (T) new Person.Builder()
+                    .name(personalData[0])
+                    .lastName(personalData[1])
+                    .age(age)
+                    .build();
+
+            if (person != null){
+                people.add(person);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Возраст должен быть числом!");
+        }
+
+        return people;
         //TODO: Реализовать метод мануального создания коллекции из консоли
     }
 }
