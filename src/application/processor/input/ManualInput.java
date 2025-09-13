@@ -22,7 +22,7 @@ public class ManualInput<T extends Person> implements InputStrategy<T>{
             return people;
         }
 
-        try {
+        if (personalData[2].matches("\\d+")) {
             int age = Integer.parseInt(personalData[2]);
 
             @SuppressWarnings("unchecked")
@@ -32,14 +32,11 @@ public class ManualInput<T extends Person> implements InputStrategy<T>{
                     .age(age)
                     .build();
 
-            if (person != null){
-                people.add(person);
-            }
-        } catch (NumberFormatException e) {
+            people.add(person);
+        } else {
             System.out.println("Возраст должен быть числом!");
         }
 
         return people;
-        //TODO: Реализовать метод мануального создания коллекции из консоли
     }
 }
