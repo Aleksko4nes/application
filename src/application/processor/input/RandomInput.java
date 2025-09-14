@@ -16,22 +16,7 @@ public class RandomInput<T extends Person> implements InputStrategy<T> {
 
             Random randomGenerator = new Random();
             Person[] persons = new Person[size];
-            // Ниже списки мужских/женских имён и фамилий
-            //-------------------------------------------------------------------------------------------------------------------------------------------------------------
-            final String[] maleNamesArray = {"Ivan", "Artem", "Aleksander", "Silvester",  "Artur", "Maxim", "Grigoriy", "Efim", "John", "Alexey",
-                    "Dominic", "Vasiliy", "Oleg", "Akakiy", "Sergey", "Nikolya", "Tihon", "Ilya", "Ildar", "Svyatoslav",
-                    "Elisey", "Anatoliy", "Ibragym", "Takumi", "Charlie", "Shaman", "Kesha", "Konstantin", "Evgeniy", "Ravshan", "Vladimir"};
-            final String[] womenNamesArray = {"Olga", "Alina", "Svetlana", "Anastasia", "Anjelika", "Eva", "Madonna", "Viktoria", "Elena", "Natalya",
-                    "Afdotya", "Vasilisa", "Alena", "Angelina", "Alla", "Oksana", "Leti", "Nazuki", "Karina", "Yana",
-                    "Milena", "Valeriya", "Irina", "Darya", "Anna", "Polina", "Ekaterina", "Alisa", "Maria", "Galina", "Monika", "Aleksandra"};
-            final String[] maleLastNamesArray = {"Ivanov", "Kolesnikov", "Stalone", "Swarcneger", "Kochetkov", "Shumilov", "Serov", "Fujivara", "Toretto", "Polezhaikin",
-                    "Ahmedov", "Abubakirov", "Kvasov", "Korzhukov", "Negreev", "Zolo", "Pushkin", "Tatarkin", "Kramarchuk", "Tramp",
-                    "Belozerov", "Bataikin", "Tihonov", "Danilec", "Rahmatulin", "Baturin", "Domrachev", "Suharev", "Grinkin", "Soloviev", "Mazurov"};
-            final String[] womenLastNamesArray = {"Ivanova", "Kolesnikova", "Stalone", "Swarcneger", "Kochetkova", "Shumilova", "Serova", "Fujivara", "Toretto", "Polezhaikina",
-                    "Ahmedova", "Abubakirova", "Kvasova", "Korzhukova", "Negreeva", "Zolo", "Pushkina", "Tatarkina", "Kramarchuk", "Tramp",
-                    "Belozerova", "Bataikina", "Tihonova", "Danilec", "Rahmatulina", "Baturina", "Domracheva", "Suhareva", "Grinkina", "Solovieva", "Mazurov"};
-            int arrayLength = 31;
-
+            // UPD: Списки с фамилиями и именами были перенесены в отдельный файл RandomData
             for (int i = 0; i < size; i++) {
                 int randomSex = randomGenerator.nextInt(2);
                 // от 0 до 1 (2 не включается), если 0, то создаём женщину со случайным именем и фамилией
@@ -39,16 +24,16 @@ public class RandomInput<T extends Person> implements InputStrategy<T> {
                 // если выпадает число 1, то мужчину с соответствующими ему полями
                 if (randomSex == 0) {
                     // выпало число 0, создаём женщину
-                    int randomIntName = randomGenerator.nextInt(arrayLength);
-                    // рандомное число от 0 до 30
-                    String randomName = womenNamesArray[randomIntName];
+                    int randomIntName = randomGenerator.nextInt(RandomData.womenNamesArray.length);
+                    // UPD: рандомное число из промежутка длины массива с женскими именами womenNamesArray
+                    String randomName = RandomData.womenNamesArray[randomIntName];
                     // присвоение женского имени из массива womenNamesArray в зависимости от randomIntName
-                    int randomIntLastName = randomGenerator.nextInt(arrayLength);
-                    // рандомное число от 0 до 30
-                    String randomLastName = womenLastNamesArray[randomIntLastName];
+                    int randomIntLastName = randomGenerator.nextInt(RandomData.womenLastNamesArray.length);
+                    // UPD: рандомное число из промежутка длины массива с женскими фамилиями womenLastNamesArray
+                    String randomLastName = RandomData.womenLastNamesArray[randomIntLastName];
                     // присвоение женской фамилии из массива womenLastNamesArray в зависимости от randomIntLastName
                     int randomAge = randomGenerator.nextInt(149) + 1;
-                    // присвоение рандомного возраста от 1 до 149
+                    // присвоение рандомного возраста от 1 до 149 лет
                     persons[i] = new Person.Builder()
                             .name(randomName)
                             .lastName(randomLastName)
@@ -58,16 +43,16 @@ public class RandomInput<T extends Person> implements InputStrategy<T> {
                 } else if (randomSex == 1) {
                     // выпало число 1, то по аналогии с женщиной создаем мужчину, используя
                     // вместо womenNamesArray - maleNamesArray, а вместо womenLastNamesArray - maleLastNamesArray
-                    int randomIntName = randomGenerator.nextInt(arrayLength);
-                    String randomName = maleNamesArray[randomIntName];
-                    int randomIntLastName = randomGenerator.nextInt(arrayLength);
-                    String randomLastName = maleLastNamesArray[randomIntLastName];
+                    int randomIntName = randomGenerator.nextInt(RandomData.maleNamesArray.length);
+                    String randomName = RandomData.maleNamesArray[randomIntName];
+                    int randomIntLastName = randomGenerator.nextInt(RandomData.maleLastNamesArray.length);
+                    String randomLastName = RandomData.maleLastNamesArray[randomIntLastName];
                     int randomAge = randomGenerator.nextInt(149) + 1;
-                    persons[i] = new Person.Builder()
-                            .name(randomName)
-                            .lastName(randomLastName)
-                            .age(randomAge)
-                            .build();
+                        persons[i] = new Person.Builder()
+                                .name(randomName)
+                                .lastName(randomLastName)
+                                .age(randomAge)
+                                .build();
                 }
             }
             return persons;
