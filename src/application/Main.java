@@ -102,11 +102,73 @@ public class Main {
                             System.out.println("Коллекция пуста. Загрузите данные.");
                             continue;
                         }
-                        System.out.println("Введите имя для поиска: ");
-                        String name = scanner.nextLine().trim();
-                        Person found = binarySearch(data, name);
-                        System.out.println(found != null ? "Найдено: " + found : "Не найдено!");
+                        
+                        System.out.println("По какому полю искать? \n1 - По имени\n2 - По фамилии\n3 - По возрасту");
+                        int searchChoice = Integer.parseInt(scanner.nextLine().trim());
+                        
+                        String searchField;
+                        switch (searchChoice) {
+                            case 1 -> searchField = "name";
+                            case 2 -> searchField = "lastname";
+                            case 3 -> searchField = "age";
+                            default -> {
+                                System.out.println("Неверный выбор! Будет использовано имя.");
+                                searchField = "name";
+                            }
+                        }
+                         
+                        if (!isCollectionSorted(data, searchField)) {
+                            System.out.println("Внимание: коллекция не отсортирована по полю '" + searchField + "'!");
+                            System.out.println("Бинарный поиск требует отсортированной коллекции.");
+                            System.out.println("1 - Сначала отсортировать\n2 - Продолжить anyway\n3 - Отменить поиск");
+                            
+                            int sortDecision = Integer.parseInt(scanner.nextLine().trim());
+                            switch (sortDecision) {
+                                case 1 -> {
+                                    Comparator<Person> comparator;
+                                    switch (searchField) {
+                                        case "name" -> comparator = Comparator.comparing(Person::getName);
+                                        case "lastname" -> comparator = Comparator.comparing(Person::getLastName);
+                                        case "age" -> comparator = Comparator.comparing(Person::getAge);
+                                        default -> comparator = Comparator.comparing(Person::getName);
+                                    }
+                                    processor.setSortingStrategy(new MergeSort<>(comparator));
+                                    data = processor.sortCollection(data);
+                                    System.out.println("Коллекция отсортирована: " + data);
+                                }
+                                case 2 -> {
+                                    System.out.println("Продолжаем поиск (результат может быть некорректным)...");
+                                }
+                                case 3 -> {
+                                    System.out.println("Поиск отменен.");
+                                    continue;
+                                }
+                                default -> {
+                                    System.out.println("Неверный выбор! Поиск отменен.");
+                                    continue;
+                                }
+                            }
+                        }
+                        
+                        System.out.println("Введите значение для поиска: ");
+                        String searchValue = scanner.nextLine().trim();
+                        
+                        BinarySearch<Person> binarySearch = new BinarySearch<>();
+                        binarySearch.setSearchField(searchField);
+                        processor.setSearchStrategy(binarySearch);
+                        
+                        Person found = binarySearch(data, searchValue);
+                        if (found != null) {
+                            System.out.println("===Найдено:===");
+                            System.out.println("   Имя: " + found.getName());
+                            System.out.println("   Фамилия: " + found.getLastName());
+                            System.out.println("   Возраст: " + found.getAge());
+                        } else {
+                            System.out.println("===Не найдено!===");
+                        }
+
                     }
+
                     case EXIT -> {
                         System.out.println("Выход...");
                         scanner.close();
@@ -139,4 +201,36 @@ public class Main {
         processor.setInputStrategy(new ManualInput<>());
         return processor.fillCollection(value);
     }
+
+    private static boolean isCollectionSorted(List<Person> collection, String field) {
+    if (collection == null || collection.size() <= 1) {
+        return true;
+    }
+    
+    for (int i = 0; i < collection.size() - 1; i++) {
+        Person current = collection.get(i);
+        Person next = collection.get(i + 1);
+        
+        int comparison;
+        switch (field.toLowerCase()) {
+            case "name":
+                comparison = current.getName().compareTo(next.getName());
+                break;
+            case "lastname":
+                comparison = current.getLastName().compareTo(next.getLastName());
+                break;
+            case "age":
+                comparison = Integer.compare(current.getAge(), next.getAge());
+                break;
+            default:
+                comparison = current.getName().compareTo(next.getName());
+        }
+        
+        if (comparison > 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
 }
