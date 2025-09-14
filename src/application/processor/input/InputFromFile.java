@@ -1,6 +1,7 @@
 package application.processor.input;
 
 import application.entity.Person;
+import application.utils.DataParser;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -8,61 +9,57 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static application.processor.input.ManualJsonReader.parsePerson;
+public class InputFromFile<T extends Person> implements InputStrategy<T> {
+    private final DataParser<T> parser;
 
-public class InputFromFile<T extends Person> implements InputStrategy<Person> {
+    public InputFromFile(DataParser<T> parser) {
+        this.parser = parser;
+    }
     @Override
-    public List<Person> load(String filename) {
+    public List<T> load(String filename) {
         String fileExtension = getFileExtension(filename);
-        return switch (fileExtension) {
+        return switch (fileExtension.toLowerCase()) {
             case "txt" -> loadFromTxt(filename);
-            case "JSON" -> loadFromJSON(filename);
+            case "json" -> loadFromJSON(filename);
             default -> new ArrayList<>();
         };
     }
-
-    private List<Person> loadFromTxt(String filename) {
+    // убрать try catch
+    private List<T> loadFromTxt(String filename) {
         try {
-            List<Person> persons = new ArrayList<>();
+            List<T> items = new ArrayList<>();
             List<String> lines = Files.readAllLines(Paths.get(filename));
 
             for (String line : lines) {
                 try {
-                    // Предполагаем формат: Name,Age,Email
+                    // Предполагаем формат: Name,LastName,Age
                     String[] parts = line.split(",");
                     if (parts.length == 3) {
-                        Person person = new Person.Builder()
-                                .name(parts[0].trim())
-                                .lastName(parts[1].trim())
-                                .age(Integer.parseInt(parts[2]))
-                                .build();
-                        persons.add(person);
+                        T item = parser.parseFromString(line);
+                        items.add(item);
                     } else {
-                        System.out.println("Skipping invalid line: " + line);
+                        System.out.println("Пропуск невалидной строки: " + line);
                     }
                 } catch (IllegalArgumentException e) {
-                    System.out.println("Skipping invalid data: " + line + " - " + e.getMessage());
+                    System.out.println("Пропуск невалидных данных: " + line + " - " + e.getMessage());
                 }
             }
 
-            Person[] dataArray = persons.toArray(new Person[0]);
-
-            return Arrays.asList(dataArray);
+            return items;
 
         } catch (IOException e) {
-            System.out.println("File error: " + e.getMessage());
+            System.out.println("Ошибка файла: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("Unexpected error: " + e.getMessage());
+            System.out.println("Неизвестная ошибка: " + e.getMessage());
         }
 
         return new ArrayList<>();
     }
 
-    private List<Person> loadFromJSON(String filename) {
-        List<Person> persons = new ArrayList<>();
+    private List<T> loadFromJSON(String filename) {
+        List<T> items = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             StringBuilder content = new StringBuilder();
@@ -79,10 +76,9 @@ public class InputFromFile<T extends Person> implements InputStrategy<Person> {
                 String[] personArray = objects.split("\\},\\s*\\{");
 
                 for (String personStr : personArray) {
-                    Person person = parsePerson(personStr.replace("{", "").replace("}", ""));
-                    if (person != null) {
-                        persons.add(person);
-                    }
+                    String cleanedStr = personStr.replace("{", "").replace("}", "");
+                    T item = parser.parseFromJson(cleanedStr);
+                    items.add(item);
                 }
             }
 
@@ -90,10 +86,12 @@ public class InputFromFile<T extends Person> implements InputStrategy<Person> {
             e.printStackTrace();
         }
 
-        return persons;
+        return items;
     }
 
-    private String getFileExtension(String fileName) {
-        return fileName.split("\\.")[1];
+    // Находит последнюю точку в пути и возвращает расширение файла
+    private String getFileExtension(String filename) {
+        int dotIndex = filename.lastIndexOf(".");
+        return (dotIndex == -1) ? "" : filename.substring(dotIndex + 1);
     }
 }

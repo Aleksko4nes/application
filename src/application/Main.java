@@ -7,6 +7,7 @@ import application.processor.input.ManualInput;
 import application.processor.input.RandomInput;
 import application.processor.searching.BinarySearch;
 import application.processor.sorting.*;
+import application.utils.PersonParser;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -26,7 +27,6 @@ public class Main {
     private static List<Person> data = new ArrayList<>();
 
     public static void main(String[] args) {
-
         System.out.println("Добро пожаловать!");
 
         while (true) {
@@ -126,7 +126,8 @@ public class Main {
     }
 
     private static List<Person> downloadFromFile (String pathName) {
-        processor.setInputStrategy(new InputFromFile<>());
+        // Для загрузки других классов при необходимости нужно написать новые билдер и передать его в InputFromFile
+        processor.setInputStrategy(new InputFromFile<>(new PersonParser()));
         return processor.fillCollection(pathName);
     }
 
