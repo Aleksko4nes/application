@@ -157,7 +157,7 @@ public class Main {
                         binarySearch.setSearchField(searchField);
                         processor.setSearchStrategy(binarySearch);
                         
-                        Person found = binarySearch(data, searchValue);
+                        Person found = binarySearch(data, searchValue, searchField);
                         if (found != null) {
                             System.out.println("===Найдено:===");
                             System.out.println("   Имя: " + found.getName());
@@ -182,9 +182,11 @@ public class Main {
         }
     }
 
-    private static Person binarySearch(List<Person> data, String name){
-        processor.setSearchStrategy(new BinarySearch<>());
-        return processor.findElementInCollectionByBinarySearch(data, name);
+    private static Person binarySearch(List<Person> data, String searchValue, String searchField){
+        BinarySearch<Person> binarySearch = new BinarySearch<>();
+        binarySearch.setSearchField(searchField);
+        processor.setSearchStrategy(binarySearch);
+        return processor.findElementInCollectionByBinarySearch(data, searchValue);
     }
 
     private static List<Person> downloadFromFile (String pathName) {

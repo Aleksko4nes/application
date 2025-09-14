@@ -1,13 +1,9 @@
 package application.processor.searching;
 
 import application.entity.Person;
-
 import java.util.List;
-import java.util.Comparator;
 
 public class BinarySearch<T> implements SearchStrategy<T> {
-
-    private Comparator<T> comparator;
     private String searchField = "name";
 
     @Override
@@ -33,7 +29,6 @@ public class BinarySearch<T> implements SearchStrategy<T> {
                 right = mid - 1;
             }
         }
-
         return null;
     }
 
@@ -46,7 +41,11 @@ public class BinarySearch<T> implements SearchStrategy<T> {
                 case "lastname":
                     return person.getLastName().compareTo(key);
                 case "age":
-                    return Integer.compare(person.getAge(), Integer.parseInt(key));
+                    try {
+                        return Integer.compare(person.getAge(), Integer.parseInt(key));
+                    } catch (NumberFormatException e) {
+                        return -1; // если возраст не число
+                    }
                 default:
                     return person.getName().compareTo(key);
             }
@@ -54,10 +53,7 @@ public class BinarySearch<T> implements SearchStrategy<T> {
         return element.toString().compareTo(key);
     }
 
-    public void setComparator(Comparator<T> comparator) {
-        this.comparator = comparator;
-    }
-
+    // УБЕРИТЕ методы с comparator - они не нужны!
     public void setSearchField(String searchField) {
         this.searchField = searchField;
     }
