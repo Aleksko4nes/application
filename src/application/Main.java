@@ -7,7 +7,6 @@ import application.processor.input.ManualInput;
 import application.processor.input.RandomInput;
 import application.processor.searching.BinarySearch;
 import application.processor.sorting.*;
-import application.processor.utils.DataParser;
 import application.processor.utils.PersonParser;
 
 import java.util.ArrayList;
@@ -60,20 +59,57 @@ public class Main {
                     }
 
                     case MANUAL_FILLING -> {
-                        System.out.println(
-                                "Введите элемент (Имя, Фамилия, Возраст)");
+                        System.out.println("Введите элемент (Имя, Фамилия, Возраст)");
                         boolean isStop = false;
                         while (!isStop) {
                             String value = scanner.nextLine().trim();
-                            if (value.equals("Стоп") || value.equals("стоп")) {
+                            if (value.equalsIgnoreCase("Стоп")) {
                                 isStop = true;
                             }
-                            data.add(fillManual(value).getFirst());
-                            System.out.println("Данные введены: " + data + '\n' +
-                                    "Введи \"Стоп\" если хватит\n" );
+                            if (!isStop && !fillManual(value).isEmpty()) {
+                                data.add(fillManual(value).getFirst());
+                                System.out.println("Данные введены: " + data.getLast() + '\n' +
+                                        "Введи \"Стоп\" если хватит\n");
+                            }
                         }
-
                     }
+
+//                    case MANUAL_FILLING -> {
+//                        System.out.println(
+//                                "Введите элемент (Имя, Фамилия, Возраст)");
+//                        boolean isStop = false;
+//                        while (!isStop) {
+//                            String value = scanner.nextLine().trim();
+//                            if (value.equalsIgnoreCase("Стоп")) {
+//                                isStop = true;
+//                            } else {
+//                                List<Person> newPeople = fillManual(value);
+//                                if (!newPeople.isEmpty()) {
+//                                    Person person = newPeople.get(0);
+//                                    data.add(person);
+//                                    System.out.println("Данные введены: " + person + '\n' +
+//                                            "Введи \"Стоп\" если хватит\n");
+//                                }
+//                            }
+//                        }
+//
+//                    }
+
+//                    case MANUAL_FILLING -> {
+//                        System.out.println(
+//                                "Введите элемент (Имя, Фамилия, Возраст)");
+//                        boolean isStop = false;
+//                        while (!isStop) {
+//                            String value = scanner.nextLine().trim();
+//                            if (value.equalsIgnoreCase("Стоп")) {
+//                                isStop = true;
+//                            }
+//                            data.add(fillManual(value).getFirst());
+//                            System.out.println("Данные введены: " + data + '\n' +
+//                                    "Введи \"Стоп\" если хватит\n" );
+//                        }
+//
+//                    }
 
                     case SORT_COLLECTION -> {
                         if (data.isEmpty()) {
@@ -100,8 +136,8 @@ public class Main {
                         System.out.println("Отсортировано: " + data);
                     }
                     case FIND_IN_COLLECTION -> {
-                        if (data.isEmpty()) {
-                            System.out.println("Коллекция пуста. Загрузите данные.");
+                                if (data.isEmpty()) {
+                                    System.out.println("Коллекция пуста. Загрузите данные.");
                             continue;
                         }
                         System.out.println("Введите имя для поиска: ");

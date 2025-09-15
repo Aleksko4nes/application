@@ -2,12 +2,62 @@ package application.processor.searching;
 
 import application.entity.Person;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-public class BinarySearch<T> implements SearchStrategy<T>{
-    private final String searchField = "name";
+public class BinarySearch<T> implements SearchStrategy<T> {
+        private final String searchField = "name";
     @Override
     public T search(List<T> collection, String key) {
+
+//            if (collection == null || collection.isEmpty()) {
+//                return null;
+//            }
+//
+//            int numThreads = 4;
+//            ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+//
+//            try {
+//                int chunkSize = (int) Math.ceil((double) collection.size() / numThreads);
+//                List<Future<Integer>> futures = new ArrayList<>();
+//
+//                for (int i = 0; i < collection.size(); i += chunkSize) {
+//                    int start = i;
+//                    int end = Math.min(i + chunkSize, collection.size());
+//                    futures.add(executor.submit(() -> countInChunk(collection.subList(start, end), key)));
+//                }
+//
+//                int totalCount = 0;
+//                for (Future<Integer> future : futures) {
+//                    totalCount += future.get();
+//                }
+//                System.out.println("Количество элементов в списке: " + totalCount);
+//
+//            } catch (InterruptedException | ExecutionException e) {
+//                Thread.currentThread().interrupt();
+//                throw new RuntimeException("Ошибка при подсчёте вхождений", e);
+//
+//            } finally {
+//                executor.shutdown();
+//            }
+//            return null;
+//        }
+//
+//        private int countInChunk(List<T> chunk, String element) {
+//            int count = 0;
+//            for (T item : chunk) {
+//                if (item.equals(element)) {
+//                    count++;
+//                }
+//            }
+//            return count;
+//        }
+//    }
+
         if (collection == null || collection.isEmpty()) {
             return null;
         }
@@ -52,4 +102,7 @@ public class BinarySearch<T> implements SearchStrategy<T>{
         }
         return element.toString().compareTo(key);
     }
-}
+
+
+//
+    }
