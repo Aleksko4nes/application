@@ -6,7 +6,7 @@ public class PersonParser implements DataParser<Person> {
 
     @Override
     public Person parseFromString(String data) {
-        String[] parts = data.split(",");
+        String[] parts = data.trim().split("\\s+");
         if (parts.length != 3) {
             System.out.println("В файле находятся невалидные данные!");
         }

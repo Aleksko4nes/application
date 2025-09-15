@@ -35,7 +35,7 @@ public class InputFromFile<T extends Person> implements InputStrategy<T> {
             for (String line : lines) {
                 try {
                     // Предполагаем формат: Name,LastName,Age
-                    String[] parts = line.split(",");
+                    String[] parts = line.trim().split("\\s+");
                     if (parts.length == 3) {
                         T item = parser.parseFromString(line);
                         items.add(item);
