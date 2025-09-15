@@ -68,7 +68,7 @@ public class Main {
                             if (value.equals("Стоп") || value.equals("стоп")) {
                                 isStop = true;
                             }
-                            data = fillManual(value);
+                            data.add(fillManual(value).getFirst());
                             System.out.println("Данные введены: " + data + '\n' +
                                     "Введи \"Стоп\" если хватит\n" );
                         }
