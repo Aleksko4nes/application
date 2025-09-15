@@ -1,8 +1,6 @@
-package application.manager.input_processor;
+package application.processor.input;
 
 public class RandomData {
-
-    // Массивы мужских и женских имён, а также фамилий для рандомного создания через RandomInput
     static public final String[] maleNamesArray = {"Ivan", "Artem", "Aleksander", "Silvester",  "Artur", "Maxim", "Grigoriy", "Efim", "John", "Alexey",
             "Dominic", "Vasiliy", "Oleg", "Akakiy", "Sergey", "Nikolya", "Tihon", "Ilya", "Ildar", "Svyatoslav",
             "Elisey", "Anatoliy", "Ibragym", "Takumi", "Charlie", "Shaman", "Kesha", "Konstantin", "Evgeniy", "Ravshan", "Vladimir"};

@@ -7,6 +7,8 @@ import application.processor.input.ManualInput;
 import application.processor.input.RandomInput;
 import application.processor.searching.BinarySearch;
 import application.processor.sorting.*;
+import application.processor.utils.DataParser;
+import application.processor.utils.PersonParser;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -126,7 +128,7 @@ public class Main {
     }
 
     private static List<Person> downloadFromFile (String pathName) {
-        processor.setInputStrategy(new InputFromFile<>());
+        processor.setInputStrategy(new InputFromFile<>(new PersonParser()));
         return processor.fillCollection(pathName);
     }
 
