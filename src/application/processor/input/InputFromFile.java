@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,14 +20,19 @@ public class InputFromFile<T extends Person> implements InputStrategy<T> {
     }
     @Override
     public List<T> load(String filename) {
-        String fileExtension = getFileExtension(filename);
-        return switch (fileExtension.toLowerCase()) {
-            case "txt" -> loadFromTxt(filename);
-            case "json" -> loadFromJSON(filename);
-            default -> new ArrayList<>();
-        };
+        Path path = Paths.get(filename);
+        if (Files.exists(path)) {
+            String fileExtension = getFileExtension(filename);
+            return switch (fileExtension.toLowerCase()) {
+                case "txt" -> loadFromTxt(filename);
+                case "json" -> loadFromJSON(filename);
+                default -> new ArrayList<>();
+            };
+        } else {
+            System.out.println("Файл не существует.");
+            return new ArrayList<>();
+        }
     }
-    // убрать try catch
     private List<T> loadFromTxt(String filename) {
         try {
             List<T> items = new ArrayList<>();
@@ -34,13 +40,17 @@ public class InputFromFile<T extends Person> implements InputStrategy<T> {
 
             for (String line : lines) {
                 try {
-                    // Предполагаем формат: Name,LastName,Age
-                    String[] parts = line.trim().split("\\s+");
+                    // Убираем лишние пробелы и нормализуем строку
+                    String normalizedLine = line.trim().replaceAll("\\s+", " ");
+                    // Используем регулярное выражение для гибкого парсинга
+                    // Разрешаем: запятые, точки, пробелы, точки с запятой как разделители
+                    String[] parts = normalizedLine.split("[,;.\\s]+");
+
                     if (parts.length == 3) {
                         T item = parser.parseFromString(line);
                         items.add(item);
                     } else {
-                        System.out.println("Пропуск невалидной строки: " + line);
+                        System.out.println("Пропуск невалидной строки (должно быть 3 компонента): " + line);
                     }
                 } catch (IllegalArgumentException e) {
                     System.out.println("Пропуск невалидных данных: " + line + " - " + e.getMessage());
@@ -70,7 +80,6 @@ public class InputFromFile<T extends Person> implements InputStrategy<T> {
             }
 
             String json = content.toString();
-            // Упрощенный парсинг JSON массива
             if (json.startsWith("[") && json.endsWith("]")) {
                 String objects = json.substring(1, json.length() - 1);
                 String[] personArray = objects.split("\\},\\s*\\{");

@@ -2,19 +2,50 @@ package application.processor.utils;
 
 import application.entity.Person;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class PersonParser implements DataParser<Person> {
 
     @Override
-    public Person parseFromString(String data) {
-        String[] parts = data.trim().split("\\s+");
-        if (parts.length != 3) {
-            System.out.println("В файле находятся невалидные данные!");
+    public Person parseFromString(String data) throws IllegalArgumentException {
+        String trimmedLine = data.trim();
+
+        // Строгое регулярное выражение для формата "Name LastName Age"
+        // Разрешаем: запятые, точки, пробелы, точки с запятой как разделители
+        // Но требуюем именно 3 компонента
+        Pattern pattern = Pattern.compile(
+                "^([a-zA-Zа-яА-ЯёЁ]+)[,;.\\s]+([a-zA-Zа-яА-ЯёЁ]+)[,;.\\s]+(\\d+)$"
+        );
+
+        Matcher matcher = pattern.matcher(trimmedLine);
+        String[] parts = trimmedLine.split("[,;.\\s]+");
+
+        if (!matcher.find()) {
+            throw new IllegalArgumentException("Неверный формат данных. Ожидается: Имя Фамилия Возраст");
         }
 
+        String name = matcher.group(1);
+        String lastName = matcher.group(2);
+        //int age = Integer.parseInt(matcher.group(3));
+        String ageStr = parts[2].trim();
+
+        // Проверяем, что имя и фамилия состоят только из букв
+        if (!name.matches("[a-zA-Zа-яА-ЯёЁ]{2,}") || !lastName.matches("[a-zA-Zа-яА-ЯёЁ]{2,}")) {
+            throw new IllegalArgumentException("Имя и фамилия должны содержать только буквы (минимум 2)");
+        }
+
+        // Проверяем, что возраст - число
+        if (!ageStr.matches("\\d+")) {
+            throw new IllegalArgumentException("Возраст должен быть числом");
+        }
+
+        int age = Integer.parseInt(ageStr);
+
         return new Person.Builder()
-                .name(parts[0].trim())
-                .lastName(parts[1].trim())
-                .age(Integer.parseInt(parts[2].trim()))
+                .name(name)
+                .lastName(lastName)
+                .age(age)
                 .build();
     }
 
