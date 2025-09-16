@@ -7,6 +7,7 @@ import application.processor.input.ManualInput;
 import application.processor.input.RandomInput;
 import application.processor.searching.BinarySearch;
 import application.processor.sorting.*;
+import application.processor.utils.FileService;
 import application.processor.utils.PersonParser;
 
 import java.util.ArrayList;
@@ -20,7 +21,9 @@ public class Main {
     private static final int MANUAL_FILLING = 3;
     private static final int SORT_COLLECTION = 4;
     private static final int FIND_IN_COLLECTION = 5;
-    private static final int EXIT = 6;
+
+    private static final int SEARCH_HISTORY = 6;
+    private static final int EXIT = 7;
 
     private static Processor<Person> processor = new Processor<>();
     private static final Scanner scanner = new Scanner(System.in);
@@ -38,7 +41,8 @@ public class Main {
                     3 - Заполнить вручную
                     4 - Отсортировать коллекцию
                     5 - Найти элемент
-                    6 - Выход""");
+                    6 - Показать историю поиска
+                    7 - Выход""");
 
             try {
                 int choice = Integer.parseInt(scanner.nextLine().trim());
@@ -48,7 +52,11 @@ public class Main {
                         System.out.println("Введите путь к файлу: ");
                         String path = scanner.nextLine().trim();
                         data = downloadFromFile(path);
-                        System.out.println("Данные загружены: " + data);
+                        if (data.size() > 0) {
+                            System.out.println("Данные загружены: " + data);
+                        } else {
+                            System.out.println("Ошибка загрузки!");
+                        }
                     }
 
                     case RANDOM_FILLING -> {
@@ -58,42 +66,42 @@ public class Main {
                         System.out.println("Данные сгенерированы: " + data);
                     }
 
-                    case MANUAL_FILLING -> {
-                        System.out.println("Введите элемент (Имя, Фамилия, Возраст)");
-                        boolean isStop = false;
-                        while (!isStop) {
-                            String value = scanner.nextLine().trim();
-                            if (value.equalsIgnoreCase("Стоп")) {
-                                isStop = true;
-                            }
-                            if (!isStop && !fillManual(value).isEmpty()) {
-                                data.add(fillManual(value).getFirst());
-                                System.out.println("Данные введены: " + data.getLast() + '\n' +
-                                        "Введи \"Стоп\" если хватит\n");
-                            }
-                        }
-                    }
-
 //                    case MANUAL_FILLING -> {
-//                        System.out.println(
-//                                "Введите элемент (Имя, Фамилия, Возраст)");
+//                        System.out.println("Введите элемент (Имя, Фамилия, Возраст)");
 //                        boolean isStop = false;
 //                        while (!isStop) {
 //                            String value = scanner.nextLine().trim();
 //                            if (value.equalsIgnoreCase("Стоп")) {
 //                                isStop = true;
-//                            } else {
-//                                List<Person> newPeople = fillManual(value);
-//                                if (!newPeople.isEmpty()) {
-//                                    Person person = newPeople.get(0);
-//                                    data.add(person);
-//                                    System.out.println("Данные введены: " + person + '\n' +
-//                                            "Введи \"Стоп\" если хватит\n");
-//                                }
+//                            }
+//                            if (!isStop && !fillManual(value).isEmpty()) {
+//                                data.add(fillManual(value).getFirst());
+//                                System.out.println("Данные введены: " + data.getLast() + '\n' +
+//                                        "Введи \"Стоп\" если хватит\n");
 //                            }
 //                        }
-//
 //                    }
+
+                    case MANUAL_FILLING -> {
+                        System.out.println(
+                                "Введите элемент (Имя, Фамилия, Возраст)");
+                        boolean isStop = false;
+                        while (!isStop) {
+                            String value = scanner.nextLine().trim();
+                            if (value.equalsIgnoreCase("Стоп")) {
+                                isStop = true;
+                            } else {
+                                List<Person> newPeople = fillManual(value);
+                                if (!newPeople.isEmpty()) {
+                                    Person person = newPeople.get(0);
+                                    data.add(person);
+                                    System.out.println("Данные введены: " + person + '\n' +
+                                            "Введи \"Стоп\" если хватит\n");
+                                }
+                            }
+                        }
+
+                    }
 
 //                    case MANUAL_FILLING -> {
 //                        System.out.println(
@@ -145,6 +153,7 @@ public class Main {
                         Person found = binarySearch(data, name);
                         System.out.println(found != null ? "Найдено: " + found : "Не найдено!");
                     }
+                    case SEARCH_HISTORY -> FileService.printSearchResults();
                     case EXIT -> {
                         System.out.println("Выход...");
                         scanner.close();
@@ -153,7 +162,8 @@ public class Main {
                     default -> System.out.println("Не верный выбор!");
                 }
             } catch (NumberFormatException e) {
-                throw new RuntimeException(e);
+                //throw new RuntimeException(e); // Если в меню выбора вписать строку, апа просто крашится
+                System.err.println("Введите цифру для выбора действия!");
             }
         }
     }
