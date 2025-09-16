@@ -1,7 +1,7 @@
 package application.processor.input;
 
 import application.entity.Person;
-import application.utils.DataParser;
+import application.processor.utils.DataParser;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

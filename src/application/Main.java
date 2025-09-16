@@ -7,7 +7,7 @@ import application.processor.input.ManualInput;
 import application.processor.input.RandomInput;
 import application.processor.searching.BinarySearch;
 import application.processor.sorting.*;
-import application.utils.PersonParser;
+import application.processor.utils.PersonParser;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -27,6 +27,7 @@ public class Main {
     private static List<Person> data = new ArrayList<>();
 
     public static void main(String[] args) {
+
         System.out.println("Добро пожаловать!");
 
         while (true) {
@@ -58,20 +59,57 @@ public class Main {
                     }
 
                     case MANUAL_FILLING -> {
-                        System.out.println(
-                                "Введите элемент (Имя, Фамилия, Возраст)");
+                        System.out.println("Введите элемент (Имя, Фамилия, Возраст)");
                         boolean isStop = false;
                         while (!isStop) {
                             String value = scanner.nextLine().trim();
-                            if (value.equals("Стоп") || value.equals("стоп")) {
+                            if (value.equalsIgnoreCase("Стоп")) {
                                 isStop = true;
                             }
-                            data = fillManual(value);
-                            System.out.println("Данные введены: " + data + '\n' +
-                                    "Введи \"Стоп\" если хватит\n" );
+                            if (!isStop && !fillManual(value).isEmpty()) {
+                                data.add(fillManual(value).getFirst());
+                                System.out.println("Данные введены: " + data.getLast() + '\n' +
+                                        "Введи \"Стоп\" если хватит\n");
+                            }
                         }
-
                     }
+
+//                    case MANUAL_FILLING -> {
+//                        System.out.println(
+//                                "Введите элемент (Имя, Фамилия, Возраст)");
+//                        boolean isStop = false;
+//                        while (!isStop) {
+//                            String value = scanner.nextLine().trim();
+//                            if (value.equalsIgnoreCase("Стоп")) {
+//                                isStop = true;
+//                            } else {
+//                                List<Person> newPeople = fillManual(value);
+//                                if (!newPeople.isEmpty()) {
+//                                    Person person = newPeople.get(0);
+//                                    data.add(person);
+//                                    System.out.println("Данные введены: " + person + '\n' +
+//                                            "Введи \"Стоп\" если хватит\n");
+//                                }
+//                            }
+//                        }
+//
+//                    }
+
+//                    case MANUAL_FILLING -> {
+//                        System.out.println(
+//                                "Введите элемент (Имя, Фамилия, Возраст)");
+//                        boolean isStop = false;
+//                        while (!isStop) {
+//                            String value = scanner.nextLine().trim();
+//                            if (value.equalsIgnoreCase("Стоп")) {
+//                                isStop = true;
+//                            }
+//                            data.add(fillManual(value).getFirst());
+//                            System.out.println("Данные введены: " + data + '\n' +
+//                                    "Введи \"Стоп\" если хватит\n" );
+//                        }
+//
+//                    }
 
                     case SORT_COLLECTION -> {
                         if (data.isEmpty()) {
@@ -98,8 +136,8 @@ public class Main {
                         System.out.println("Отсортировано: " + data);
                     }
                     case FIND_IN_COLLECTION -> {
-                        if (data.isEmpty()) {
-                            System.out.println("Коллекция пуста. Загрузите данные.");
+                                if (data.isEmpty()) {
+                                    System.out.println("Коллекция пуста. Загрузите данные.");
                             continue;
                         }
                         System.out.println("Введите имя для поиска: ");
@@ -126,7 +164,6 @@ public class Main {
     }
 
     private static List<Person> downloadFromFile (String pathName) {
-        // Для загрузки других классов при необходимости нужно написать новые билдер и передать его в InputFromFile
         processor.setInputStrategy(new InputFromFile<>(new PersonParser()));
         return processor.fillCollection(pathName);
     }
