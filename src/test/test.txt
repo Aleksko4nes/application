@@ -1,2 +1,11 @@
 Alice,Wazovski,21
 Bob,Agrom,15
+Jhon Huge 26
+Adam 15 Bobince
+Odin, Kovalski, 101
+Алексей, Раб, 27
+Арыстан Должен 25
+Иван, Иванов, 19
+Дамир,Бугаев,46
+Almaz 26
+Hank; Maik
