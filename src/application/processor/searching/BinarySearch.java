@@ -1,6 +1,7 @@
 package application.processor.searching;
 
 import application.entity.Person;
+import application.processor.utils.FileService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +60,7 @@ public class BinarySearch<T> implements SearchStrategy<T> {
 //    }
 
         if (collection == null || collection.isEmpty()) {
+            FileService.writeSearchResultToFile(null, key); // Записываем неудачный поиск
             return null;
         }
 
@@ -72,6 +74,7 @@ public class BinarySearch<T> implements SearchStrategy<T> {
             int comparison = compareWithKey(midElement, key);
 
             if (comparison == 0) {
+                FileService.writeSearchResultToFile(midElement, key); // Записываем успешный поиск
                 return midElement;
             } else if (comparison < 0) {
                 left = mid + 1;
@@ -79,6 +82,8 @@ public class BinarySearch<T> implements SearchStrategy<T> {
                 right = mid - 1;
             }
         }
+
+        FileService.writeSearchResultToFile(null, key); // Записываем неудачный поиск
         return null;
     }
 
