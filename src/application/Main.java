@@ -20,8 +20,9 @@ public class Main {
     private static final int RANDOM_FILLING = 2;
     private static final int MANUAL_FILLING = 3;
     private static final int SORT_COLLECTION = 4;
-    private static final int FIND_IN_COLLECTION = 5;
-    private static final int EXIT = 6;
+    private static final int EVEN_SORT = 5;
+    private static final int FIND_IN_COLLECTION = 6;
+    private static final int EXIT = 7;
 
     private static Processor<Person> processor = new Processor<>();
     private static final Scanner scanner = new Scanner(System.in);
@@ -38,8 +39,9 @@ public class Main {
                     2 - Заполнить случайными значениями
                     3 - Заполнить вручную
                     4 - Отсортировать коллекцию
-                    5 - Найти элемент
-                    6 - Выход""");
+                    5 - Сортировка только четных значений (возраста) 
+                    6 - Найти элемент
+                    7 - Выход""");
 
             try {
                 int choice = Integer.parseInt(scanner.nextLine().trim());
@@ -60,25 +62,39 @@ public class Main {
                     }
 
                     case MANUAL_FILLING -> {
-                        System.out.println(
-                                "Введите элемент (Имя, Фамилия, Возраст)");
+                        System.out.println("Введите элемент (Имя, Фамилия, Возраст)");
+                        while (true) {
+                            String value = scanner.nextLine().trim();
+                            if (value.equalsIgnoreCase("Стоп")) {
+                                break;
+                            }
+                            if (!fillManual(value).isEmpty()) {
+                                data.add(fillManual(value).getFirst());
+                                System.out.println("Данные введены: " + data.getLast() + '\n' +
+                                        "Введи \"Стоп\" если хватит\n");
+                            }
+                        }
+                    }
+                    /* case MANUAL_FILLING -> {
+                        System.out.println("Введите элемент (Имя, Фамилия, Возраст)");
                         boolean isStop = false;
                         while (!isStop) {
                             String value = scanner.nextLine().trim();
-                            if (value.equals("Стоп") || value.equals("стоп")) {
+                            if (value.equalsIgnoreCase("Стоп")) {
                                 isStop = true;
                             }
-                            data = fillManual(value);
-                            System.out.println("Данные введены: " + data + '\n' +
-                                    "Введи \"Стоп\" если хватит\n" );
+                            if (!isStop && !fillManual(value).isEmpty()) {
+                                data.add(fillManual(value).getFirst());
+                                System.out.println("Данные введены: " + data.getLast() + '\n' +
+                                        "Введи \"Стоп\" если хватит\n");
+                            }
                         }
-
-                    }
+                    }*/
 
                     case SORT_COLLECTION -> {
                         if (data.isEmpty()) {
-                           System.out.println("Коллекция пуста. Загрузите данные.");
-                           continue;
+                            System.out.println("Коллекция пуста. Загрузите данные.");
+                            continue;
                         }
                         System.out.println("Критерий сортировки: \n" +
                                 "1 - По имени? \n" +
@@ -98,6 +114,15 @@ public class Main {
                         processor.setSortingStrategy(new MergeSort<>(comparator));
                         data = processor.sortCollection(data);
                         System.out.println("Отсортировано: " + data);
+                    }
+                    case EVEN_SORT -> {
+                        if (data.isEmpty()) {
+                            System.out.println("Коллекция пуста. Загрузите данные.");
+                            continue;
+                        }
+                        processor.setSortingStrategy(new EvenSortStrategy<>(Person::getAge, Comparator.comparing(Person::getAge)));
+                        data = processor.sortCollection(data);
+                        System.out.println("Отсортировано (только с четными возрастами): " + data);
                     }
                     case FIND_IN_COLLECTION -> {
                         if (data.isEmpty()) {
