@@ -21,8 +21,9 @@ public class Main {
     private static final int MANUAL_FILLING = 3;
     private static final int SORT_COLLECTION = 4;
     private static final int FIND_IN_COLLECTION = 5;
-    private static final int EXIT = 6;
-    private static final int UNDO = 7;
+    private static final int EVEN_SORT = 6;
+    private static final int EXIT = 7;
+    private static final int UNDO = 8;
 
     private static CommandInvoker commandInvoker = new CommandInvoker();
     private static final Scanner scanner = new Scanner(System.in);
@@ -41,8 +42,9 @@ public class Main {
                     3 - Заполнить вручную
                     4 - Отсортировать коллекцию
                     5 - Найти элемент
-                    6 - Выход
-                    7 - Отменить последнюю команду""");
+                    6 - Сортировка четных значений
+                    7 - Выход
+                    8 - Отменить последнюю команду""");
 
             try {
                 int choice = Integer.parseInt(scanner.nextLine().trim());
@@ -109,6 +111,15 @@ public class Main {
                         String name = scanner.nextLine().trim();
                         Command command = new BinarySearchCommand(processor, data, name);
                         commandInvoker.executeCommand(command);
+                    }
+
+                    case EVEN_SORT -> {
+                        if (data.isEmpty()) {
+                            System.out.println("Коллекция пустая! Загрузите данные.");
+                        } else {
+                            Command command = new EvenSortCommand(processor, data);
+                            commandInvoker.executeCommand(command);
+                        }
                     }
 
                     case EXIT -> {
