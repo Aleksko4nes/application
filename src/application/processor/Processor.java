@@ -1,41 +1,54 @@
 package application.processor;
 
 import application.entity.Person;
+import application.processor.input.Importer;
 import application.processor.input.InputStrategy;
 import application.processor.searching.SearchStrategy;
+import application.processor.searching.Searcher;
+import application.processor.sorting.Sorter;
 import application.processor.sorting.SortingStrategy;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class Processor<T extends Person> implements ProcessCollection<T>{
-    private  SearchStrategy<T> searchStrategy;
-    private  SortingStrategy<T> sortingStrategy;
-    private  InputStrategy<T> inputStrategy;
+    private Searcher<T> searcher;
+    private Sorter<T> sorter;
+    private Importer<T> importer;
 
-    public void setSearchStrategy(SearchStrategy<T> searchStrategy) {
-        this.searchStrategy = searchStrategy;
+    public Processor(Searcher<T> searcher, Sorter<T> sorter, Importer<T> importer) {
+        this.searcher = searcher;
+        this.sorter = sorter;
+        this.importer = importer;
     }
 
-    public void setSortingStrategy(SortingStrategy<T> sortingStrategy) {
-        this.sortingStrategy = sortingStrategy;
+    public Processor() {
     }
 
-    public void setInputStrategy(InputStrategy<T> inputStrategy) {
-        this.inputStrategy = inputStrategy;
+    public void setSearcher(Searcher<T> searcher) {
+        this.searcher = searcher;
+    }
+
+    public void setSorter(Sorter<T> sorter) {
+        this.sorter = sorter;
+    }
+
+    public void setImporter(Importer<T> importer) {
+        this.importer = importer;
     }
 
     @Override
     public List<T> fillCollection(String s) {
-        return inputStrategy.load(s);
+        return importer.load(s);
     }
 
     @Override
     public T findElementInCollectionByBinarySearch(List<T> collection, String name) {
-        return searchStrategy.search(collection, name);
+        return searcher.search(collection, name);
     }
 
     @Override
-    public List<T> sortCollection(List<T> collection) {
-        return sortingStrategy.sort(collection);
+    public List<T> sortCollection(List<T> collection, Comparator<? super T> comparator) {
+        return sorter.sort(collection, comparator);
     }
 }

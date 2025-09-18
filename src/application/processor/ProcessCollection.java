@@ -1,5 +1,6 @@
 package application.processor;
 
+import java.util.Comparator;
 import java.util.List;
 
 public interface ProcessCollection<T> {
@@ -8,5 +9,5 @@ public interface ProcessCollection<T> {
 
     T findElementInCollectionByBinarySearch(List<T> collection, String name);
 
-    List<T> sortCollection(List<T> collection);
+    List<T> sortCollection(List<T> collection, Comparator<? super T> comparator);
 }
