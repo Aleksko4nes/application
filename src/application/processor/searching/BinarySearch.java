@@ -102,7 +102,4 @@ public class BinarySearch<T> implements SearchStrategy<T> {
         }
         return element.toString().compareTo(key);
     }
-
-
-//
     }

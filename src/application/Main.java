@@ -3,12 +3,6 @@ package application;
 import application.commands.*;
 import application.entity.Person;
 import application.processor.Processor;
-import application.processor.input.InputFromFile;
-import application.processor.input.ManualInput;
-import application.processor.input.RandomInput;
-import application.processor.searching.BinarySearch;
-import application.processor.sorting.*;
-import application.processor.utils.PersonParser;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,7 +19,7 @@ public class Main {
     private static final int EXIT = 7;
     private static final int UNDO = 8;
 
-    private static CommandInvoker commandInvoker = new CommandInvoker();
+    private static final CommandInvoker commandInvoker = new CommandInvoker();
     private static final Scanner scanner = new Scanner(System.in);
     private static List<Person> data = new ArrayList<>();
     private static Processor<Person> processor = new Processor<>();

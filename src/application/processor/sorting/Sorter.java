@@ -13,6 +13,7 @@ public class Sorter<T> {
     public void setStrategy(SortingStrategy<T> strategy) {
         this.strategy = strategy;
     }
+
     public List<T> sort(List<T> collection, Comparator<? super T> comparator) {
         return this.strategy.sort(collection, comparator);
     }
