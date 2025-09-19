@@ -6,7 +6,9 @@ import application.processor.input.InputFromFile;
 import application.processor.input.ManualInput;
 import application.processor.input.RandomInput;
 import application.processor.searching.BinarySearch;
+import application.processor.searching.FlexiblePersonComparator;
 import application.processor.sorting.*;
+import application.processor.utils.PersonParser;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -57,21 +59,58 @@ public class Main {
                         System.out.println("Данные сгенерированы: " + data);
                     }
 
-                    case MANUAL_FILLING -> {
-                        System.out.println(
-                                "Введите элемент (Имя, Фамилия, Возраст)");
-                        boolean isStop = false;
-                        while (!isStop) {
-                            String value = scanner.nextLine().trim();
-                            if (value.equals("Стоп") || value.equals("стоп")) {
-                                isStop = true;
-                            }
-                            data = fillManual(value);
-                            System.out.println("Данные введены: " + data + '\n' +
-                                    "Введи \"Стоп\" если хватит\n" );
-                        }
+                    // case MANUAL_FILLING -> {
+                    //     System.out.println("Введите элемент (Имя, Фамилия, Возраст)");
+                    //     boolean isStop = false;
+                    //     while (!isStop) {
+                    //         String value = scanner.nextLine().trim();
+                    //         if (value.equalsIgnoreCase("Стоп")) {
+                    //             isStop = true;
+                    //         }
+                    //         if (!isStop && !fillManual(value).isEmpty()) {
+                    //             data.add(fillManual(value).getFirst());
+                    //             System.out.println("Данные введены: " + data.getLast() + '\n' +
+                    //                     "Введи \"Стоп\" если хватит\n");
+                    //         }
+                    //     }
+                    // }
 
-                    }
+//                    case MANUAL_FILLING -> {
+//                        System.out.println(
+//                                "Введите элемент (Имя, Фамилия, Возраст)");
+//                        boolean isStop = false;
+//                        while (!isStop) {
+//                            String value = scanner.nextLine().trim();
+//                            if (value.equalsIgnoreCase("Стоп")) {
+//                                isStop = true;
+//                            } else {
+//                                List<Person> newPeople = fillManual(value);
+//                                if (!newPeople.isEmpty()) {
+//                                    Person person = newPeople.get(0);
+//                                    data.add(person);
+//                                    System.out.println("Данные введены: " + person + '\n' +
+//                                            "Введи \"Стоп\" если хватит\n");
+//                                }
+//                            }
+//                        }
+//
+//                    }
+
+//                    case MANUAL_FILLING -> {
+//                        System.out.println(
+//                                "Введите элемент (Имя, Фамилия, Возраст)");
+//                        boolean isStop = false;
+//                        while (!isStop) {
+//                            String value = scanner.nextLine().trim();
+//                            if (value.equalsIgnoreCase("Стоп")) {
+//                                isStop = true;
+//                            }
+//                            data.add(fillManual(value).getFirst());
+//                            System.out.println("Данные введены: " + data + '\n' +
+//                                    "Введи \"Стоп\" если хватит\n" );
+//                        }
+//
+//                    }
 
                     case SORT_COLLECTION -> {
                         if (data.isEmpty()) {
@@ -98,77 +137,40 @@ public class Main {
                         System.out.println("Отсортировано: " + data);
                     }
                     case FIND_IN_COLLECTION -> {
-                        if (data.isEmpty()) {
-                            System.out.println("Коллекция пуста. Загрузите данные.");
+                                if (data.isEmpty()) {
+                                    System.out.println("Коллекция пуста. Загрузите данные.");
                             continue;
                         }
-                        
-                        System.out.println("По какому полю искать? \n1 - По имени\n2 - По фамилии\n3 - По возрасту");
-                        int searchChoice = Integer.parseInt(scanner.nextLine().trim());
-                        
-                        String searchField;
-                        switch (searchChoice) {
-                            case 1 -> searchField = "name";
-                            case 2 -> searchField = "lastname";
-                            case 3 -> searchField = "age";
-                            default -> {
-                                System.out.println("Неверный выбор! Будет использовано имя.");
-                                searchField = "name";
+                        System.out.print("Введите имя для поиска: ");
+                        String name = scanner.nextLine().trim();
+
+                        System.out.print("Введите фамилию для поиска: ");
+                        String lastName = scanner.nextLine().trim();
+
+                        System.out.print("Введите возраст для поиска: ");
+                        String ageInput = scanner.nextLine().trim();
+
+                        Integer age = null;
+                        if (!ageInput.isEmpty()) {
+                            try {
+                                age = Integer.parseInt(ageInput);
+                            } catch (NumberFormatException e) {
+                                System.out.println("Некорректный возраст, поиск будет без него.");
                             }
-                        }
-                         
-                        if (!isCollectionSorted(data, searchField)) {
-                            System.out.println("Внимание: коллекция не отсортирована по полю '" + searchField + "'!");
-                            System.out.println("Бинарный поиск требует отсортированной коллекции.");
-                            System.out.println("1 - Сначала отсортировать\n2 - Продолжить anyway\n3 - Отменить поиск");
-                            
-                            int sortDecision = Integer.parseInt(scanner.nextLine().trim());
-                            switch (sortDecision) {
-                                case 1 -> {
-                                    Comparator<Person> comparator;
-                                    switch (searchField) {
-                                        case "name" -> comparator = Comparator.comparing(Person::getName);
-                                        case "lastname" -> comparator = Comparator.comparing(Person::getLastName);
-                                        case "age" -> comparator = Comparator.comparing(Person::getAge);
-                                        default -> comparator = Comparator.comparing(Person::getName);
-                                    }
-                                    processor.setSortingStrategy(new MergeSort<>(comparator));
-                                    data = processor.sortCollection(data);
-                                    System.out.println("Коллекция отсортирована: " + data);
-                                }
-                                case 2 -> {
-                                    System.out.println("Продолжаем поиск (результат может быть некорректным)...");
-                                }
-                                case 3 -> {
-                                    System.out.println("Поиск отменен.");
-                                    continue;
-                                }
-                                default -> {
-                                    System.out.println("Неверный выбор! Поиск отменен.");
-                                    continue;
-                                }
-                            }
-                        }
-                        
-                        System.out.println("Введите значение для поиска: ");
-                        String searchValue = scanner.nextLine().trim();
-                        
-                        BinarySearch<Person> binarySearch = new BinarySearch<>();
-                        binarySearch.setSearchField(searchField);
-                        processor.setSearchStrategy(binarySearch);
-                        
-                        Person found = binarySearch(data, searchValue, searchField);
-                        if (found != null) {
-                            System.out.println("===Найдено:===");
-                            System.out.println("   Имя: " + found.getName());
-                            System.out.println("   Фамилия: " + found.getLastName());
-                            System.out.println("   Возраст: " + found.getAge());
-                        } else {
-                            System.out.println("===Не найдено!===");
                         }
 
+                        Person.Builder builder = new Person.Builder();
+                        if (!name.isEmpty()) builder.name(name);
+                        if (!lastName.isEmpty()) builder.lastName(lastName);
+                        if (age != null) builder.age(age);
+
+                        Person template = builder.build();
+
+                        FlexiblePersonComparator comparator = new FlexiblePersonComparator(template);
+                        List<Person> found = binarySearch(data, template, comparator);
+
+                        System.out.println(found != null ? "Найдено: " + found : "Не найдено!");
                     }
-
                     case EXIT -> {
                         System.out.println("Выход...");
                         scanner.close();
@@ -182,15 +184,13 @@ public class Main {
         }
     }
 
-    private static Person binarySearch(List<Person> data, String searchValue, String searchField){
-        BinarySearch<Person> binarySearch = new BinarySearch<>();
-        binarySearch.setSearchField(searchField);
-        processor.setSearchStrategy(binarySearch);
-        return processor.findElementInCollectionByBinarySearch(data, searchValue);
+    private static List<Person> binarySearch(List<Person> data, Person key, FlexiblePersonComparator comparator){
+        processor.setSearchStrategy(new BinarySearch<>(comparator));
+        return processor.findElementInCollectionByBinarySearch(data, key);
     }
 
     private static List<Person> downloadFromFile (String pathName) {
-        processor.setInputStrategy(new InputFromFile<>());
+        processor.setInputStrategy(new InputFromFile<>(new PersonParser()));
         return processor.fillCollection(pathName);
     }
 
@@ -203,36 +203,4 @@ public class Main {
         processor.setInputStrategy(new ManualInput<>());
         return processor.fillCollection(value);
     }
-
-    private static boolean isCollectionSorted(List<Person> collection, String field) {
-    if (collection == null || collection.size() <= 1) {
-        return true;
-    }
-    
-    for (int i = 0; i < collection.size() - 1; i++) {
-        Person current = collection.get(i);
-        Person next = collection.get(i + 1);
-        
-        int comparison;
-        switch (field.toLowerCase()) {
-            case "name":
-                comparison = current.getName().compareTo(next.getName());
-                break;
-            case "lastname":
-                comparison = current.getLastName().compareTo(next.getLastName());
-                break;
-            case "age":
-                comparison = Integer.compare(current.getAge(), next.getAge());
-                break;
-            default:
-                comparison = current.getName().compareTo(next.getName());
-        }
-        
-        if (comparison > 0) {
-            return false;
-        }
-    }
-    return true;
-}
-
 }

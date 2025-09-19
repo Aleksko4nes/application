@@ -75,7 +75,7 @@ public class Person implements Comparable<Person> {
             return this;
         }
 
-        public boolean doQualityCheck() {
+ /*       public boolean doQualityCheck() {
             return (name != null && !name.trim().isEmpty())
                     && (lastName != null && !lastName.trim().isEmpty())
                     && (age > 0 && age < 151);
@@ -90,5 +90,9 @@ public class Person implements Comparable<Person> {
             }
             return null;
         }
+            */
+                public Person build() {
+        return new Person(this);
+    }
     }
 }

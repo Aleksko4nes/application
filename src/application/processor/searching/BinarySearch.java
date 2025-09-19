@@ -1,64 +1,56 @@
 package application.processor.searching;
 
-import application.entity.Person;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class BinarySearch<T> implements SearchStrategy<T> {
-    private String searchField = "name";
+    private final Comparator<T> comparator;
+
+    public BinarySearch(Comparator<T> comparator) {
+        this.comparator = comparator;
+    }
 
     @Override
-    public T search(List<T> collection, String key) {
+    public List<T> search(List<T> collection, T key) {
+        List<T> results = new ArrayList<>();
         if (collection == null || collection.isEmpty()) {
-            return null;
+            return results;
         }
 
-        int left = 0;
-        int right = collection.size() - 1;
+        int left = 0, right = collection.size() - 1;
 
         while (left <= right) {
             int mid = left + (right - left) / 2;
             T midElement = collection.get(mid);
 
-            int comparison = compareWithKey(midElement, key);
+            int cmp = comparator.compare(midElement, key);
 
-            if (comparison == 0) {
-                return midElement;
-            } else if (comparison < 0) {
+            if (cmp == 0) {
+                // нашли совпадение → собираем все влево и вправо
+                results.add(midElement);
+
+                // идём влево
+                int i = mid - 1;
+                while (i >= 0 && comparator.compare(collection.get(i), key) == 0) {
+                    results.add(collection.get(i));
+                    i--;
+                }
+
+                // идём вправо
+                i = mid + 1;
+                while (i < collection.size() && comparator.compare(collection.get(i), key) == 0) {
+                    results.add(collection.get(i));
+                    i++;
+                }
+
+                break; // собрали всё, можно выходить
+            } else if (cmp < 0) {
                 left = mid + 1;
             } else {
                 right = mid - 1;
             }
         }
-        return null;
-    }
-
-    private int compareWithKey(T element, String key) {
-        if (element instanceof Person) {
-            Person person = (Person) element;
-            switch (searchField.toLowerCase()) {
-                case "name":
-                    return person.getName().compareTo(key);
-                case "lastname":
-                    return person.getLastName().compareTo(key);
-                case "age":
-                    try {
-                        return Integer.compare(person.getAge(), Integer.parseInt(key));
-                    } catch (NumberFormatException e) {
-                        return -1; // если возраст не число
-                    }
-                default:
-                    return person.getName().compareTo(key);
-            }
-        }
-        return element.toString().compareTo(key);
-    }
-
-    // УБЕРИТЕ методы с comparator - они не нужны!
-    public void setSearchField(String searchField) {
-        this.searchField = searchField;
-    }
-
-    public String getSearchField() {
-        return searchField;
+        return results;
     }
 }

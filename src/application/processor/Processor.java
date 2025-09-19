@@ -16,10 +16,6 @@ public class Processor<T extends Person> implements ProcessCollection<T>{
         this.searchStrategy = searchStrategy;
     }
 
-    public SearchStrategy<T> getSearchStrategy() {
-        return searchStrategy;
-    }
-
     public void setSortingStrategy(SortingStrategy<T> sortingStrategy) {
         this.sortingStrategy = sortingStrategy;
     }
@@ -34,10 +30,7 @@ public class Processor<T extends Person> implements ProcessCollection<T>{
     }
 
     @Override
-    public T findElementInCollectionByBinarySearch(List<T> collection, String key) {
-        if (searchStrategy == null) {
-            throw new IllegalStateException("Search strategy not set");
-        }
+    public List<T> findElementInCollectionByBinarySearch(List<T> collection, T key) {
         return searchStrategy.search(collection, key);
     }
 
