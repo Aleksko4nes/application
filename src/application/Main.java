@@ -16,8 +16,9 @@ public class Main {
     private static final int SORT_COLLECTION = 4;
     private static final int FIND_IN_COLLECTION = 5;
     private static final int EVEN_SORT = 6;
-    private static final int EXIT = 7;
-    private static final int UNDO = 8;
+    private static final int DOWNLOAD = 7;
+    private static final int EXIT = 8;
+    private static final int UNDO = 9;
 
     private static final CommandInvoker commandInvoker = new CommandInvoker();
     private static final Scanner scanner = new Scanner(System.in);
@@ -37,8 +38,9 @@ public class Main {
                     4 - Отсортировать коллекцию
                     5 - Найти элемент
                     6 - Сортировка четных значений
-                    7 - Выход
-                    8 - Отменить последнюю команду""");
+                    7 - Сохранить изменения в файл
+                    8 - Выход
+                    9 - Отменить последнюю команду""");
 
             try {
                 int choice = Integer.parseInt(scanner.nextLine().trim());
@@ -113,6 +115,18 @@ public class Main {
                         } else {
                             Command command = new EvenSortCommand(processor, data);
                             commandInvoker.executeCommand(command);
+                        }
+                    }
+
+                    case DOWNLOAD -> {
+                        if (data.isEmpty()) {
+                            System.out.println("Коллекция пустая! Загрузите данные");
+                        } else {
+                            System.out.println("Введите название файла: ");
+                            String fileName = scanner.nextLine().trim();
+                            Command command = new UpdateFileOutputCommand(processor, data, fileName);
+                            commandInvoker.executeCommand(command);
+                            System.out.println("Файл " + fileName + " успешно загружен!");
                         }
                     }
 

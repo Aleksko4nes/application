@@ -3,6 +3,7 @@ package application.processor;
 import application.entity.Person;
 import application.processor.input.Importer;
 import application.processor.input.InputStrategy;
+import application.processor.output.Outputer;
 import application.processor.searching.SearchStrategy;
 import application.processor.searching.Searcher;
 import application.processor.sorting.Sorter;
@@ -15,14 +16,21 @@ public class Processor<T extends Person> implements ProcessCollection<T>{
     private Searcher<T> searcher;
     private Sorter<T> sorter;
     private Importer<T> importer;
+    private Outputer<T> outputer;
 
-    public Processor(Searcher<T> searcher, Sorter<T> sorter, Importer<T> importer) {
+
+    public Processor(Outputer<T> outputer, Searcher<T> searcher, Sorter<T> sorter, Importer<T> importer) {
+        this.outputer = outputer;
         this.searcher = searcher;
         this.sorter = sorter;
         this.importer = importer;
     }
 
     public Processor() {
+    }
+
+    public void setOutputer(Outputer<T> outputer) {
+        this.outputer = outputer;
     }
 
     public void setSearcher(Searcher<T> searcher) {
@@ -50,5 +58,10 @@ public class Processor<T extends Person> implements ProcessCollection<T>{
     @Override
     public List<T> sortCollection(List<T> collection, Comparator<? super T> comparator) {
         return sorter.sort(collection, comparator);
+    }
+
+    @Override
+    public void downloadFile(List<T> collection, String path) {
+        outputer.download(collection, path);
     }
 }
