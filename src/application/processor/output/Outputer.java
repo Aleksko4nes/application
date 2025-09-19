@@ -1,5 +1,6 @@
 package application.processor.output;
 
+import java.io.IOException;
 import java.util.List;
 
 public class Outputer<T> {
@@ -13,7 +14,7 @@ public class Outputer<T> {
         this.strategy = strategy;
     }
     
-    public void download(List<T> collection, String path) {
-        strategy.downloadFile(collection, path);
+    public void save(List<T> collection, String path) throws IOException {
+        strategy.saveToFile(collection, path);
     }
 }

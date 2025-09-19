@@ -11,5 +11,5 @@ public interface ProcessCollection<T> {
 
     List<T> sortCollection(List<T> collection, Comparator<? super T> comparator);
 
-    void downloadFile(List<T> collection, String path);
+    void saveToFile(List<T> collection, String path);
 }
