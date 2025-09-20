@@ -3,6 +3,9 @@ package application;
 import application.commands.*;
 import application.entity.Person;
 import application.processor.Processor;
+import application.processor.output.JsonSaveStrategy;
+import application.processor.output.OutputStrategy;
+import application.processor.output.TxtSaveStrategy;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -122,11 +125,33 @@ public class Main {
                         if (data.isEmpty()) {
                             System.out.println("Коллекция пустая! Загрузите данные");
                         } else {
-                            System.out.println("Введите название файла: ");
-                            String fileName = scanner.nextLine().trim();
-                            Command command = new UpdateFileOutputCommand(processor, data, fileName);
-                            commandInvoker.executeCommand(command);
-                            System.out.println("Файл " + fileName + " успешно загружен!");
+                            System.out.println("\n=== Сохранение данных ===");
+                            System.out.println("1. Сохранить в TXT");
+                            System.out.println("2. Сохранить в JSON");
+                            System.out.println("3. Отмена");
+                            System.out.print("Выберите формат: ");
+
+                            int format = scanner.nextInt();
+                            scanner.nextLine();
+
+                            if (format == 3) {
+                                System.out.println("Сохранение отменено");
+                                return;
+                            }
+
+                            System.out.print("Введите имя файла: ");
+                            String filename = scanner.nextLine();
+
+                            OutputStrategy<Person> strategy = null;
+                            switch (format) {
+                                case 1 -> strategy = new TxtSaveStrategy<>();
+                                case 2 -> strategy = new JsonSaveStrategy<>();
+                            }
+
+                            if (strategy != null) {
+                                Command command = new UpdateFileOutputCommand(processor, data, filename, strategy);
+                                command.execute();
+                            }
                         }
                     }
 
