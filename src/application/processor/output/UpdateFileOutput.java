@@ -1,5 +1,6 @@
 package application.processor.output;
 
+import javax.swing.filechooser.FileSystemView;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -7,58 +8,81 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class UpdateFileOutput<T> implements OutputStrategy<T> {
 
-    private static final String RESULTS_FILE = "search_results.txt";
-    private static final DateTimeFormatter formatter =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final Path RESULT_DIR = resolveDesktopPath().resolve("result");
 
-    public void downloadFile(List<T> collection, String path) {
-        //TODO: Сделать метод, который принимает коллекцию и !имя файла!. Директория для сохранения - константа
-        // если имя новое - то создаём новый файл.
-        // если имя уже есть - то записываем новые файлы дальше.
+    public void downloadFile(List<T> data, String filename) {
+        // Добавляем расширение .txt если его нет
+        if (!filename.toLowerCase().endsWith(".txt")) {
+            filename += ".txt";
+        }
 
-
-        Path path = Paths.get(RESULTS_FILE);
+        Path path = RESULT_DIR.resolve(filename);
 
         try {
-            if (!Files.exists(path)) {
-                Files.createFile(path);
-                if (Files.size(path) == 0) {
-                    try (BufferedWriter writer = Files.newBufferedWriter(
-                            path,
-                            StandardCharsets.UTF_8,
-                            StandardOpenOption.WRITE
-                    )) {
-                        writer.write("\uFEFF"); // UTF-8 BOM
-                    }
-                }
-            }
+            // Создаем директорию если нужно
+            createDirectory();
 
-            String record = String.format(
-                    "[%s] Поиск: '%s' -> Результат: %s%n",
-                    LocalDateTime.now().format(formatter),
-                    searchKey,
-                    result != null ? result.toString() : "не найден"
-            );
+            // Создаем файл с BOM если не существует
+            createFileWithBomIfNeeded(path);
 
+            // Записываем данные
+            writeDataToFile(data, path);
+        } catch (IOException e) {
+            System.out.println("Ошибка записи в файл: " + e.getMessage());
+        }
+    }
+
+    private void createDirectory() throws IOException {
+        if (!Files.exists(RESULT_DIR)) {
+            Files.createDirectories(RESULT_DIR);
+        }
+    }
+
+    private void createFileWithBomIfNeeded(Path path) throws IOException {
+        if (!Files.exists(path)) {
+            Files.createFile(path);
+            // Добавляем BOM только для новых файлов
             try (BufferedWriter writer = Files.newBufferedWriter(
                     path,
                     StandardCharsets.UTF_8,
-                    StandardOpenOption.APPEND
+                    StandardOpenOption.WRITE
             )) {
-                writer.write(record);
-                writer.flush();
+                writer.write("\uFEFF"); // UTF-8 BOM
             }
-
-            System.out.println("Результат поиска сохранен в файл: " + RESULTS_FILE);
-
-        } catch (IOException e) {
-            System.err.println("Ошибка при записи в файл: " + e.getMessage());
         }
+    }
+
+    private void writeDataToFile(List<T> data, Path path) throws IOException {
+        try (BufferedWriter writer = Files.newBufferedWriter(
+                path,
+                StandardCharsets.UTF_8,
+                StandardOpenOption.APPEND
+        )) {
+            for (T item : data) {
+                writer.write(item.toString());
+                writer.newLine();
+            }
+        }
+    }
+
+    private static Path resolveDesktopPath() {
+        // Пробуем несколько возможных путей
+        Path[] possiblePaths = {
+                Paths.get(System.getProperty("user.home"), "Рабочий стол"), // для русской Windows
+                FileSystemView.getFileSystemView().getHomeDirectory().toPath()
+        };
+
+        for (Path path : possiblePaths) {
+            if (Files.exists(path) && Files.isDirectory(path)) {
+                return path;
+            }
+        }
+
+        // Если ничего не найдено, используем домашнюю директорию
+        return Paths.get(System.getProperty("user.home"));
     }
 }
