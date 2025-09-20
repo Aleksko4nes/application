@@ -14,7 +14,7 @@ public class UpdateFileOutput<T> implements OutputStrategy<T> {
 
     private static final Path RESULT_DIR = resolveDesktopPath().resolve("result");
 
-    public void downloadFile(List<T> data, String filename) {
+    public void saveToFile(List<T> data, String filename) {
         // Добавляем расширение .txt если его нет
         if (!filename.toLowerCase().endsWith(".txt")) {
             filename += ".txt";
