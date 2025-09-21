@@ -3,106 +3,97 @@ package application.processor.searching;
 import application.entity.Person;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
-public class BinarySearch<T> implements SearchStrategy<T> {
-        private final String searchField = "name";
+public class BinarySearch<T extends Person> implements SearchStrategy<T> {
+
     @Override
-    public T search(List<T> collection, String key) {
-
-//            if (collection == null || collection.isEmpty()) {
-//                return null;
-//            }
-//
-//            int numThreads = 4;
-//            ExecutorService executor = Executors.newFixedThreadPool(numThreads);
-//
-//            try {
-//                int chunkSize = (int) Math.ceil((double) collection.size() / numThreads);
-//                List<Future<Integer>> futures = new ArrayList<>();
-//
-//                for (int i = 0; i < collection.size(); i += chunkSize) {
-//                    int start = i;
-//                    int end = Math.min(i + chunkSize, collection.size());
-//                    futures.add(executor.submit(() -> countInChunk(collection.subList(start, end), key)));
-//                }
-//
-//                int totalCount = 0;
-//                for (Future<Integer> future : futures) {
-//                    totalCount += future.get();
-//                }
-//                System.out.println("Количество элементов в списке: " + totalCount);
-//
-//            } catch (InterruptedException | ExecutionException e) {
-//                Thread.currentThread().interrupt();
-//                throw new RuntimeException("Ошибка при подсчёте вхождений", e);
-//
-//            } finally {
-//                executor.shutdown();
-//            }
-//            return null;
-//        }
-//
-//        private int countInChunk(List<T> chunk, String element) {
-//            int count = 0;
-//            for (T item : chunk) {
-//                if (item.equals(element)) {
-//                    count++;
-//                }
-//            }
-//            return count;
-//        }
-//    }
+    public List<T> search(List<T> collection, String key) {
+        List<T> results = new ArrayList<>();
+        collection.sort(Comparator.naturalOrder());
 
         if (collection == null || collection.isEmpty()) {
-            return null;
+            System.out.println("Ничего не нашлось");
+            return results;
         }
+
+        if (key.matches(".*\\d.*")) {
+            System.out.println("Неверный формат");
+            return results;
+        }
+
+        String[] parts = key.trim().split("\\s+");
+        String name = parts[0];
+        String lastName = (parts.length > 1) ? parts[1] : null;
 
         int left = 0;
         int right = collection.size() - 1;
+        boolean found = false;
 
         while (left <= right) {
             int mid = left + (right - left) / 2;
             T midElement = collection.get(mid);
 
-            int comparison = compareWithKey(midElement, key);
+            if (!(midElement instanceof Person)) {
+                break;
+            }
 
-            if (comparison == 0) {
-                return midElement;
-            } else if (comparison < 0) {
+            Person person = midElement;
+            int cmp = compare(name, lastName, person);
+
+            if (cmp == 0) {
+                results.add(midElement);
+
+                int i = mid - 1;
+                while (i >= left) {
+                    Person p = collection.get(i);
+                    if (compare(name, lastName, p) == 0) {
+                        results.add((T) p);
+                        i--;
+                    } else {
+                        break;
+                    }
+                }
+
+                i = mid + 1;
+                while (i <= right) {
+                    Person p = collection.get(i);
+                    if (compare(name, lastName, p) == 0) {
+                        results.add((T) p);
+                        i++;
+                    } else {
+                        break;
+                    }
+                }
+
+                found = true;
+                break;
+            } else if (cmp < 0) {
                 left = mid + 1;
             } else {
                 right = mid - 1;
             }
         }
-        return null;
-    }
 
-    private int compareWithKey(T element, String key) {
-        if (element instanceof Person) {
-            Person person = (Person) element;
-            switch (searchField.toLowerCase()) {
-                case "name":
-                    return person.getName().compareTo(key);
-                case "lastname":
-                    return person.getLastName().compareTo(key);
-                case "age":
-                    try {
-                        return Integer.compare(person.getAge(), Integer.parseInt(key));
-                    } catch (NumberFormatException e) {
-                        return -1; // если возраст не число
-                    }
-                default:
-                    return person.getName().compareTo(key);
-            }
+        if (!found) {
+            System.out.println("Ничего не нашлось");
         }
-        return element.toString().compareTo(key);
+
+        return results;
     }
 
+    private int compare(String name, String lastName, Person person) {
+        String personName = person.getName().trim().toLowerCase();
+        String searchName = name.trim().toLowerCase();
 
-//
+        int cmp = personName.compareTo(searchName);
+
+        if (cmp == 0 && lastName != null) {
+            String personLastName = person.getLastName().trim().toLowerCase();
+            String searchLastName = lastName.trim().toLowerCase();
+            cmp = personLastName.compareTo(searchLastName);
+        }
+        return cmp;
     }
+}

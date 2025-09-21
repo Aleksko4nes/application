@@ -3,5 +3,5 @@ package application.processor.searching;
 import java.util.List;
 
 public interface SearchStrategy<T> {
-    T search(List<T> collection, String name);
+    List<T> search(List<T> collection, String key);
 }

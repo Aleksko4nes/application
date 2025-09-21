@@ -1,41 +1,67 @@
 package application.processor;
 
 import application.entity.Person;
-import application.processor.input.InputStrategy;
-import application.processor.searching.SearchStrategy;
-import application.processor.sorting.SortingStrategy;
+import application.processor.input.Importer;
+import application.processor.output.Outputer;
+import application.processor.searching.Searcher;
+import application.processor.sorting.Sorter;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.List;
 
 public class Processor<T extends Person> implements ProcessCollection<T>{
-    private  SearchStrategy<T> searchStrategy;
-    private  SortingStrategy<T> sortingStrategy;
-    private  InputStrategy<T> inputStrategy;
+    private Searcher<T> searcher;
+    private Sorter<T> sorter;
+    private Importer<T> importer;
+    private Outputer<T> outputer;
 
-    public void setSearchStrategy(SearchStrategy<T> searchStrategy) {
-        this.searchStrategy = searchStrategy;
+
+    public Processor(Outputer<T> outputer, Searcher<T> searcher, Sorter<T> sorter, Importer<T> importer) {
+        this.outputer = outputer;
+        this.searcher = searcher;
+        this.sorter = sorter;
+        this.importer = importer;
     }
 
-    public void setSortingStrategy(SortingStrategy<T> sortingStrategy) {
-        this.sortingStrategy = sortingStrategy;
+    public Processor() {
     }
 
-    public void setInputStrategy(InputStrategy<T> inputStrategy) {
-        this.inputStrategy = inputStrategy;
+    public void setOutputer(Outputer<T> outputer) {
+        this.outputer = outputer;
+    }
+
+    public void setSearcher(Searcher<T> searcher) {
+        this.searcher = searcher;
+    }
+
+    public void setSorter(Sorter<T> sorter) {
+        this.sorter = sorter;
+    }
+
+    public void setImporter(Importer<T> importer) {
+        this.importer = importer;
     }
 
     @Override
     public List<T> fillCollection(String s) {
-        return inputStrategy.load(s);
+        return importer.load(s);
     }
 
     @Override
-    public T findElementInCollectionByBinarySearch(List<T> collection, String name) {
-        return searchStrategy.search(collection, name);
+    public List<T> findElementInCollectionByBinarySearch(List<T> collection, String name) {
+        return searcher.search(collection, name);
     }
 
     @Override
-    public List<T> sortCollection(List<T> collection) {
-        return sortingStrategy.sort(collection);
+    public List<T> sortCollection(List<T> collection, Comparator<? super T> comparator) {
+        return sorter.sort(collection, comparator);
+    }
+
+    @Override
+    public void saveToFile(List<T> data, String filename) {
+        outputer.save(data, filename);
     }
 }

@@ -1,16 +1,16 @@
 package application.processor.input;
 
 public class RandomData {
-    static public final String[] maleNamesArray = {"Ivan", "Artem", "Aleksander", "Silvester",  "Artur", "Maxim", "Grigoriy", "Efim", "John", "Alexey",
-            "Dominic", "Vasiliy", "Oleg", "Akakiy", "Sergey", "Nikolya", "Tihon", "Ilya", "Ildar", "Svyatoslav",
-            "Elisey", "Anatoliy", "Ibragym", "Takumi", "Charlie", "Shaman", "Kesha", "Konstantin", "Evgeniy", "Ravshan", "Vladimir"};
-    static public final String[] womenNamesArray = {"Olga", "Alina", "Svetlana", "Anastasia", "Anjelika", "Eva", "Madonna", "Viktoria", "Elena", "Natalya",
-            "Afdotya", "Vasilisa", "Alena", "Angelina", "Alla", "Oksana", "Leti", "Nazuki", "Karina", "Yana",
-            "Milena", "Valeriya", "Irina", "Darya", "Anna", "Polina", "Ekaterina", "Alisa", "Maria", "Galina", "Monika", "Aleksandra"};
-    static public final String[] maleLastNamesArray = {"Ivanov", "Kolesnikov", "Stalone", "Swarcneger", "Kochetkov", "Shumilov", "Serov", "Fujivara", "Toretto", "Polezhaikin",
-            "Ahmedov", "Abubakirov", "Kvasov", "Korzhukov", "Negreev", "Zolo", "Pushkin", "Tatarkin", "Kramarchuk", "Tramp",
-            "Belozerov", "Bataikin", "Tihonov", "Danilec", "Rahmatulin", "Baturin", "Domrachev", "Suharev", "Grinkin", "Soloviev", "Mazurov"};
-    static public final String[] womenLastNamesArray = {"Ivanova", "Kolesnikova", "Stalone", "Swarcneger", "Kochetkova", "Shumilova", "Serova", "Fujivara", "Toretto", "Polezhaikina",
-            "Ahmedova", "Abubakirova", "Kvasova", "Korzhukova", "Negreeva", "Zolo", "Pushkina", "Tatarkina", "Kramarchuk", "Tramp",
-            "Belozerova", "Bataikina", "Tihonova", "Danilec", "Rahmatulina", "Baturina", "Domracheva", "Suhareva", "Grinkina", "Solovieva", "Mazurov"};
+    static public final String[] maleNamesArray = {"Иван", "Артем", "Александр", "Сильвестр",  "Артур", "Максим", "Григорий", "Ефим", "Джон", "Алексей",
+            "Доминик", "Василий", "Олег", "Акакий", "Сергей", "Николай", "Тихон", "Илья", "Ильдар", "Святослав",
+            "Стив", "Анатолий", "Ибрагим", "Такуми", "Чарли", "Шаман", "Брайан", "Константин", "Евгений", "Шон", "Владимир"};
+    static public final String[] womenNamesArray = {"Ольга", "Алина", "Светлана", "Анастасия", "Анжелика", "Ева", "Мадонна", "Виктория", "Елена", "Наталья",
+            "Амелия", "Василиса", "Алена", "Ангелина", "Алла", "Оксана", "Летти", "Нацуки", "Карина", "Яна",
+            "Милена", "Валерия", "Ирина", "Дарья", "Анна", "Полина", "Екатерина", "Алиса", "Мария", "Галина", "Моника", "Александра"};
+    static public final String[] maleLastNamesArray = {"Иванов", "Колесников", "Сталоне", "Шварцнегер", "Кочетков", "Шумилов", "Серов", "Фудживара", "Торетто", "Полежайкин",
+            "Ахмедов", "Абубакиров", "Квасов", "Корзюков", "Нигреев", "Золо", "Пушкин", "Татарников", "Крамарчук", "Трамп",
+            "Белозеров", "Батайкин", "Тихонов", "Данилец", "Рахматулин", "Батурин", "Домрачев", "Сухарев", "Гринкин", "Соловьев", "Мазуров"};
+    static public final String[] womenLastNamesArray = {"Иванова", "Колесникова", "Сталоне", "Шварцнегер", "Кочеткова", "Шумилова", "Серова", "Фудживара", "Торетто", "Полежайкина",
+            "Ахмедова", "Абубакирова", "Квасова", "Корзюкова", "Нигреева", "Золо", "Пушкина", "Татарникова", "Крамарчук", "Трамп",
+            "Белозерова", "Батайкина", "Тихонова", "Данилец", "Рахматулина", "Батурина", "Домрачева", "Сухарева", "Гринкина", "Соловьева", "Мазурова"};
 }

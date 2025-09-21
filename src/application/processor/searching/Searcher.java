@@ -3,6 +3,7 @@ package application.processor.searching;
 import java.util.List;
 
 public class Searcher<T> {
+
     private SearchStrategy<T> strategy;
 
     public Searcher(SearchStrategy<T> strategy) {
@@ -13,7 +14,7 @@ public class Searcher<T> {
         this.strategy = strategy;
     }
 
-    public T search(List<T> collection, String name) {
-        return strategy.search(collection, name);
+    public List<T> search(List<T> collection, String key) {
+        return strategy.search(collection, key);
     }
 }

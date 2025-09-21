@@ -1,13 +1,9 @@
 package application;
 
+import application.commands.*;
 import application.entity.Person;
 import application.processor.Processor;
-import application.processor.input.InputFromFile;
-import application.processor.input.ManualInput;
-import application.processor.input.RandomInput;
-import application.processor.searching.BinarySearch;
-import application.processor.sorting.*;
-import application.processor.utils.PersonParser;
+import application.processor.output.OutputStrategy;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,11 +16,15 @@ public class Main {
     private static final int MANUAL_FILLING = 3;
     private static final int SORT_COLLECTION = 4;
     private static final int FIND_IN_COLLECTION = 5;
-    private static final int EXIT = 6;
+    private static final int EVEN_SORT = 6;
+    private static final int DOWNLOAD = 7;
+    private static final int EXIT = 8;
+    private static final int UNDO = 9;
 
-    private static Processor<Person> processor = new Processor<>();
+    private static final CommandInvoker commandInvoker = new CommandInvoker();
     private static final Scanner scanner = new Scanner(System.in);
     private static List<Person> data = new ArrayList<>();
+    private static Processor<Person> processor = new Processor<>();
 
     public static void main(String[] args) {
 
@@ -38,7 +38,10 @@ public class Main {
                     3 - Заполнить вручную
                     4 - Отсортировать коллекцию
                     5 - Найти элемент
-                    6 - Выход""");
+                    6 - Сортировка четных значений
+                    7 - Сохранить изменения в файл
+                    8 - Выход
+                    9 - Отменить последнюю команду""");
 
             try {
                 int choice = Integer.parseInt(scanner.nextLine().trim());
@@ -47,15 +50,15 @@ public class Main {
                     case INPUT_FROM_FILE -> {
                         System.out.println("Введите путь к файлу: ");
                         String path = scanner.nextLine().trim();
-                        data = downloadFromFile(path);
-                        System.out.println("Данные загружены: " + data);
+                        Command inputCommand = new InputFromFileCommand(processor, path, data);
+                        commandInvoker.executeCommand(inputCommand);
                     }
 
                     case RANDOM_FILLING -> {
                         System.out.println("Введите колличество элементов: ");
                         String size = scanner.nextLine().trim();
-                        data = randomFilling(size);
-                        System.out.println("Данные сгенерированы: " + data);
+                        Command inputCommand = new RandomInputCommand(processor, size, data);
+                        commandInvoker.executeCommand(inputCommand);
                     }
 
                     case MANUAL_FILLING -> {
@@ -65,51 +68,13 @@ public class Main {
                             String value = scanner.nextLine().trim();
                             if (value.equalsIgnoreCase("Стоп")) {
                                 isStop = true;
-                            }
-                            if (!isStop && !fillManual(value).isEmpty()) {
-                                data.add(fillManual(value).getFirst());
-                                System.out.println("Данные введены: " + data.getLast() + '\n' +
-                                        "Введи \"Стоп\" если хватит\n");
+                            } else {
+                                Command inputCommand = new ManualInputCommand(processor, value, data);
+                                commandInvoker.executeCommand(inputCommand);
+                                System.out.println("Введите \"Стоп\" если хватит\n");
                             }
                         }
                     }
-
-//                    case MANUAL_FILLING -> {
-//                        System.out.println(
-//                                "Введите элемент (Имя, Фамилия, Возраст)");
-//                        boolean isStop = false;
-//                        while (!isStop) {
-//                            String value = scanner.nextLine().trim();
-//                            if (value.equalsIgnoreCase("Стоп")) {
-//                                isStop = true;
-//                            } else {
-//                                List<Person> newPeople = fillManual(value);
-//                                if (!newPeople.isEmpty()) {
-//                                    Person person = newPeople.get(0);
-//                                    data.add(person);
-//                                    System.out.println("Данные введены: " + person + '\n' +
-//                                            "Введи \"Стоп\" если хватит\n");
-//                                }
-//                            }
-//                        }
-//
-//                    }
-
-//                    case MANUAL_FILLING -> {
-//                        System.out.println(
-//                                "Введите элемент (Имя, Фамилия, Возраст)");
-//                        boolean isStop = false;
-//                        while (!isStop) {
-//                            String value = scanner.nextLine().trim();
-//                            if (value.equalsIgnoreCase("Стоп")) {
-//                                isStop = true;
-//                            }
-//                            data.add(fillManual(value).getFirst());
-//                            System.out.println("Данные введены: " + data + '\n' +
-//                                    "Введи \"Стоп\" если хватит\n" );
-//                        }
-//
-//                    }
 
                     case SORT_COLLECTION -> {
                         if (data.isEmpty()) {
@@ -131,9 +96,8 @@ public class Main {
                                 continue;
                             }
                         }
-                        processor.setSortingStrategy(new MergeSort<>(comparator));
-                        data = processor.sortCollection(data);
-                        System.out.println("Отсортировано: " + data);
+                        Command command = new MergeSortCommand(processor,data,comparator);
+                        commandInvoker.executeCommand(command);
                     }
                     case FIND_IN_COLLECTION -> {
                                 if (data.isEmpty()) {
@@ -141,40 +105,44 @@ public class Main {
                             continue;
                         }
                         System.out.println("Введите имя для поиска: ");
-                        String name = scanner.nextLine().trim();
-                        Person found = binarySearch(data, name);
-                        System.out.println(found != null ? "Найдено: " + found : "Не найдено!");
+                        String name = scanner.nextLine();
+                        Command command = new BinarySearchCommand(processor, data, name);
+                        commandInvoker.executeCommand(command);
                     }
+
+                    case EVEN_SORT -> {
+                        if (data.isEmpty()) {
+                            System.out.println("Коллекция пустая! Загрузите данные.");
+                        } else {
+                            Command command = new EvenSortCommand(processor, data);
+                            commandInvoker.executeCommand(command);
+                        }
+                    }
+
+                    case DOWNLOAD -> {
+                        if (data.isEmpty()) {
+                            System.out.println("Коллекция пустая! Загрузите данные");
+                        } else {
+                            System.out.print("Введите имя файла: ");
+                            String filename = scanner.nextLine();
+                            Command command = new UpdateFileOutputCommand(processor, data, filename);
+                            command.execute();
+                        }
+                    }
+
                     case EXIT -> {
                         System.out.println("Выход...");
                         scanner.close();
                         return;
                     }
+
+                    case UNDO -> commandInvoker.undoLastCommand();
+
                     default -> System.out.println("Не верный выбор!");
                 }
             } catch (NumberFormatException e) {
-                throw new RuntimeException(e);
+                System.out.println("Не верный формат");
             }
         }
-    }
-
-    private static Person binarySearch(List<Person> data, String name){
-        processor.setSearchStrategy(new BinarySearch<>());
-        return processor.findElementInCollectionByBinarySearch(data, name);
-    }
-
-    private static List<Person> downloadFromFile (String pathName) {
-        processor.setInputStrategy(new InputFromFile<>(new PersonParser()));
-        return processor.fillCollection(pathName);
-    }
-
-    private static List<Person> randomFilling(String size) {
-        processor.setInputStrategy(new RandomInput<>());
-        return processor.fillCollection(size);
-    }
-
-    private static List<Person> fillManual(String value) {
-        processor.setInputStrategy(new ManualInput<>());
-        return processor.fillCollection(value);
     }
 }
