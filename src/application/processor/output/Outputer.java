@@ -14,7 +14,7 @@ public class Outputer<T> {
         this.strategy = strategy;
     }
     
-    public void save(List<T> collection, String path) throws IOException {
+    public void save(List<T> collection, String path) {
         strategy.saveToFile(collection, path);
     }
 }

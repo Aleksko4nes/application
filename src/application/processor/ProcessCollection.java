@@ -7,7 +7,7 @@ public interface ProcessCollection<T> {
 
     List<T> fillCollection(String path);
 
-    T findElementInCollectionByBinarySearch(List<T> collection, String name);
+    List<T> findElementInCollectionByBinarySearch(List<T> collection, String key);
 
     List<T> sortCollection(List<T> collection, Comparator<? super T> comparator);
 

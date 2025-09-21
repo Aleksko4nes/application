@@ -51,7 +51,7 @@ public class Processor<T extends Person> implements ProcessCollection<T>{
     }
 
     @Override
-    public T findElementInCollectionByBinarySearch(List<T> collection, String name) {
+    public List<T> findElementInCollectionByBinarySearch(List<T> collection, String name) {
         return searcher.search(collection, name);
     }
 
@@ -62,12 +62,6 @@ public class Processor<T extends Person> implements ProcessCollection<T>{
 
     @Override
     public void saveToFile(List<T> data, String filename) {
-        try {
-            outputer.save(data, filename);
-            Path path = Paths.get(filename).toAbsolutePath();
-            System.out.println("Файл успешно сохранен: " + path);
-        } catch (IOException e) {
-            System.err.println("Ошибка при сохранении: " + e.getMessage());
-        }
+        outputer.save(data, filename);
     }
 }

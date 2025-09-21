@@ -12,24 +12,18 @@ public class UpdateFileOutputCommand implements Command{
     private Processor<Person> processor;
     private List<Person> data;
     private String path;
-    private OutputStrategy<Person> formatStrategy;
 
     public UpdateFileOutputCommand(Processor<Person> processor,
                                    List<Person> data,
-                                   String path,
-                                   OutputStrategy<Person> formatStrategy) {
+                                   String path) {
         this.processor = processor;
         this.data = data;
         this.path = path;
-        this.formatStrategy = formatStrategy;
     }
 
     @Override
     public void execute() {
-        UpdateFileOutput<Person> fileOutput = new UpdateFileOutput<>();
-        fileOutput.setFormatStrategy(formatStrategy);
-
-        processor.setOutputer(new Outputer<>(fileOutput));
+        processor.setOutputer(new Outputer<>(new UpdateFileOutput<>()));
         processor.saveToFile(data, path);
     }
 

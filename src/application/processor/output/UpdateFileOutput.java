@@ -15,7 +15,7 @@ public class UpdateFileOutput<T> implements OutputStrategy<T> {
     private static final Path RESULT_DIR = resolveDesktopPath().resolve("result");
 
     public void saveToFile(List<T> data, String filename) {
-        // Добавляем расширение .txt если его нет
+
         if (!filename.toLowerCase().endsWith(".txt")) {
             filename += ".txt";
         }
@@ -23,13 +23,8 @@ public class UpdateFileOutput<T> implements OutputStrategy<T> {
         Path path = RESULT_DIR.resolve(filename);
 
         try {
-            // Создаем директорию если нужно
             createDirectory();
-
-            // Создаем файл с BOM если не существует
             createFileWithBomIfNeeded(path);
-
-            // Записываем данные
             writeDataToFile(data, path);
         } catch (IOException e) {
             System.out.println("Ошибка записи в файл: " + e.getMessage());
@@ -45,7 +40,6 @@ public class UpdateFileOutput<T> implements OutputStrategy<T> {
     private void createFileWithBomIfNeeded(Path path) throws IOException {
         if (!Files.exists(path)) {
             Files.createFile(path);
-            // Добавляем BOM только для новых файлов
             try (BufferedWriter writer = Files.newBufferedWriter(
                     path,
                     StandardCharsets.UTF_8,
@@ -70,7 +64,6 @@ public class UpdateFileOutput<T> implements OutputStrategy<T> {
     }
 
     private static Path resolveDesktopPath() {
-        // Пробуем несколько возможных путей
         Path[] possiblePaths = {
                 Paths.get(System.getProperty("user.home"), "Рабочий стол"), // для русской Windows
                 FileSystemView.getFileSystemView().getHomeDirectory().toPath()
@@ -82,7 +75,6 @@ public class UpdateFileOutput<T> implements OutputStrategy<T> {
             }
         }
 
-        // Если ничего не найдено, используем домашнюю директорию
         return Paths.get(System.getProperty("user.home"));
     }
 }
