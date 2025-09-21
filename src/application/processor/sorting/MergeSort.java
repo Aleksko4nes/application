@@ -14,7 +14,7 @@ public class MergeSort<T extends Comparable<? super T>> implements SortingStrate
     private final int threshold;
 
     public MergeSort(Comparator<? super T> comparator) {
-        this(comparator, Executors.newFixedThreadPool(2), Integer.MAX_VALUE); // Без ограничения
+        this(comparator, Executors.newFixedThreadPool(2), Integer.MAX_VALUE);
     }
 
     public MergeSort(Comparator<? super T> comparator, ExecutorService executor, int threshold) {
