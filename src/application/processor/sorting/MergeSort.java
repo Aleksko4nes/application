@@ -11,15 +11,16 @@ import java.util.concurrent.Future;
 public class MergeSort<T extends Comparable<? super T>> implements SortingStrategy<T> {
     private final ExecutorService executor;
     private final Comparator<? super T> comparator;
-    private static final int THRESHOLD = 100;
+    private final int threshold;
 
     public MergeSort(Comparator<? super T> comparator) {
-        this(comparator, Executors.newFixedThreadPool(2)); //
+        this(comparator, Executors.newFixedThreadPool(2), Integer.MAX_VALUE); // Без ограничения
     }
 
-    public MergeSort(Comparator<? super T> comparator, ExecutorService executor) {
+    public MergeSort(Comparator<? super T> comparator, ExecutorService executor, int threshold) {
         this.comparator = comparator;
         this.executor = executor;
+        this.threshold = threshold;
     }
 
     @Override
@@ -38,7 +39,7 @@ public class MergeSort<T extends Comparable<? super T>> implements SortingStrate
 
     private void mergeSort(List<T> list, int low, int high) {
         if (low < high) {
-            if (high - low <= THRESHOLD) {
+            if (high - low <= threshold) {
                 list.subList(low, high + 1).sort(comparator);
                 return;
             }
